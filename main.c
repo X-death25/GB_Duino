@@ -2,28 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#ifdef WIN32
-#include <windows.h>
-#elif _POSIX_C_SOURCE >= 199309L
-#include <time.h>   // for nanosleep
-#else
-#include <unistd.h> // for usleep
-#endif
-
-void sleep_ms(int milliseconds){ // cross-platform sleep function
-#ifdef WIN32
-	Sleep(milliseconds);
-#elif _POSIX_C_SOURCE >= 199309L
-	struct timespec ts;
-	ts.tv_sec = milliseconds / 1000;
-	ts.tv_nsec = (milliseconds % 1000) * 1000000;
-	nanosleep(&ts, NULL);
-#else
-	if (milliseconds >= 1000) sleep(milliseconds / 1000);
-	usleep((milliseconds % 1000) * 1000);
-#endif
-}
-
 #define MAX_VERSION 	1
 #define MIN_VERSION 	0
 
@@ -55,7 +33,7 @@ int check(enum sp_return result)
 		}
 }
 
-int main()
+int main(int argc, char *argv[])
 	{
 	unsigned char Game_Name[15];
 	unsigned short Global_Checksum=0;
