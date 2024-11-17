@@ -19,8 +19,7 @@ void sleep_ms(int milliseconds){ // cross-platform sleep function
 	ts.tv_nsec = (milliseconds % 1000) * 1000000;
 	nanosleep(&ts, NULL);
 #else
-	if (milliseconds >= 1000)
-	  sleep(milliseconds / 1000);
+	if (milliseconds >= 1000) sleep(milliseconds / 1000);
 	usleep((milliseconds % 1000) * 1000);
 #endif
 }
@@ -392,8 +391,7 @@ int main()
             }
         else
             {
-			char data1[1];
-			data1[0]=0xAA;
+			char data1[1];	data1[0]=0xAA;
             sp_blocking_write(tx_port, data1, 1, 20);
             sp_blocking_read(rx_port, Serial_Buffer_IN, 128, 100);
             i=0;
