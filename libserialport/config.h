@@ -2,23 +2,23 @@
 /* config.h.in.  Generated from configure.ac by autoheader.  */
 
 /* clock_gettime is available. */
-#define HAVE_CLOCK_GETTIME 1
+/* #undef HAVE_CLOCK_GETTIME */
 
 /* Define to 1 if you have the declaration of `BOTHER', and to 0 if you don't.
    */
-#define HAVE_DECL_BOTHER 1
+#define HAVE_DECL_BOTHER 0
 
 /* Define to 1 if you have the <dlfcn.h> header file. */
-#define HAVE_DLFCN_H 1
+/* #undef HAVE_DLFCN_H */
 
 /* flock is available. */
-#define HAVE_FLOCK 1
+/* #undef HAVE_FLOCK */
 
 /* Define to 1 if you have the <inttypes.h> header file. */
 #define HAVE_INTTYPES_H 1
 
 /* realpath is available. */
-#define HAVE_REALPATH 1
+/* #undef HAVE_REALPATH */
 
 /* Define to 1 if you have the <stdint.h> header file. */
 #define HAVE_STDINT_H 1
@@ -36,16 +36,16 @@
 #define HAVE_STRING_H 1
 
 /* Define to 1 if the system has the type `struct serial_struct'. */
-#define HAVE_STRUCT_SERIAL_STRUCT 1
+/* #undef HAVE_STRUCT_SERIAL_STRUCT */
 
 /* Define to 1 if the system has the type `struct termios2'. */
-#define HAVE_STRUCT_TERMIOS2 1
+/* #undef HAVE_STRUCT_TERMIOS2 */
 
 /* Define to 1 if `c_ispeed' is a member of `struct termios2'. */
-#define HAVE_STRUCT_TERMIOS2_C_ISPEED 1
+/* #undef HAVE_STRUCT_TERMIOS2_C_ISPEED */
 
 /* Define to 1 if `c_ospeed' is a member of `struct termios2'. */
-#define HAVE_STRUCT_TERMIOS2_C_OSPEED 1
+/* #undef HAVE_STRUCT_TERMIOS2_C_OSPEED */
 
 /* Define to 1 if `c_ispeed' is a member of `struct termios'. */
 /* #undef HAVE_STRUCT_TERMIOS_C_ISPEED */
@@ -93,7 +93,7 @@
 #define PACKAGE_VERSION "0.1.2"
 
 /* Macro preceding public API functions */
-#define SP_API __attribute__((visibility("default")))
+#define SP_API __declspec(dllexport)
 
 /* . */
 #define SP_LIB_VERSION_AGE 1
@@ -120,7 +120,7 @@
 #define SP_PACKAGE_VERSION_STRING "0.1.2"
 
 /* Macro preceding private functions */
-#define SP_PRIV __attribute__((visibility("hidden")))
+#define SP_PRIV 
 
 /* Define to 1 if all of the C90 standard headers exist (not just the ones
    required in a freestanding environment). This macro is provided for
@@ -128,7 +128,7 @@
 #define STDC_HEADERS 1
 
 /* Number of bits in a file offset, on hosts where this is settable. */
-/* #undef _FILE_OFFSET_BITS */
+#define _FILE_OFFSET_BITS 64
 
 /* Define for large files, on AIX-style hosts. */
 /* #undef _LARGE_FILES */

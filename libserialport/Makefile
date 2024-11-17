@@ -89,9 +89,9 @@ NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = x86_64-pc-linux-gnu
-host_triplet = x86_64-pc-linux-gnu
-am__append_1 = linux.c linux_termios.c linux_termios.h
-#am__append_2 = windows.c
+host_triplet = i686-w64-mingw32
+#am__append_1 = linux.c linux_termios.c linux_termios.h
+am__append_2 = windows.c
 #am__append_3 = macosx.c
 #am__append_4 = freebsd.c
 #am__append_5 = -framework IOKit -framework CoreFoundation
@@ -151,8 +151,8 @@ libserialport_la_DEPENDENCIES = $(am__DEPENDENCIES_1)
 am__libserialport_la_SOURCES_DIST = serialport.c timing.c \
 	libserialport_internal.h linux.c linux_termios.c \
 	linux_termios.h windows.c macosx.c freebsd.c
-am__objects_1 = linux.lo linux_termios.lo
-#am__objects_2 = windows.lo
+#am__objects_1 = linux.lo linux_termios.lo
+am__objects_2 = windows.lo
 #am__objects_3 = macosx.lo
 #am__objects_4 = freebsd.lo
 am_libserialport_la_OBJECTS = serialport.lo timing.lo $(am__objects_1) \
@@ -400,7 +400,7 @@ am__set_TESTS_bases = \
 AM_TESTSUITE_SUMMARY_HEADER = ' for $(PACKAGE_STRING)'
 RECHECK_LOGS = $(TEST_LOGS)
 TEST_SUITE_LOG = test-suite.log
-TEST_EXTENSIONS =  .test
+TEST_EXTENSIONS = .exe .test
 LOG_DRIVER = $(SHELL) $(top_srcdir)/autostuff/test-driver
 LOG_COMPILE = $(LOG_COMPILER) $(AM_LOG_FLAGS) $(LOG_FLAGS)
 am__set_b = \
@@ -414,7 +414,7 @@ am__set_b = \
       b='$*';; \
   esac
 am__test_logs1 = $(TESTS:=.log)
-am__test_logs2 = $(am__test_logs1:.log=.log)
+am__test_logs2 = $(am__test_logs1:.exe.log=.log)
 TEST_LOGS = $(am__test_logs2:.test.log=.log)
 TEST_LOG_DRIVER = $(SHELL) $(top_srcdir)/autostuff/test-driver
 TEST_LOG_COMPILE = $(TEST_LOG_COMPILER) $(AM_TEST_LOG_FLAGS) \
@@ -451,15 +451,15 @@ distuninstallcheck_listfiles = find . -type f -print
 am__distuninstallcheck_listfiles = $(distuninstallcheck_listfiles) \
   | sed 's|^\./|$(prefix)/|' | grep -v '$(infodir)/dir$$'
 distcleancheck_listfiles = find . -type f -print
-ACLOCAL = ${SHELL} '/home/usagipc/Programmes/GB_Duino/libserialport/autostuff/missing' aclocal-1.16
+ACLOCAL = ${SHELL} '/home/usagipc/Documents/GitHub/GB_Duino/libserialport/autostuff/missing' aclocal-1.16
 AMTAR = $${TAR-tar}
 AM_DEFAULT_VERBOSITY = 0
-AR = ar
-AUTOCONF = ${SHELL} '/home/usagipc/Programmes/GB_Duino/libserialport/autostuff/missing' autoconf
-AUTOHEADER = ${SHELL} '/home/usagipc/Programmes/GB_Duino/libserialport/autostuff/missing' autoheader
-AUTOMAKE = ${SHELL} '/home/usagipc/Programmes/GB_Duino/libserialport/autostuff/missing' automake-1.16
+AR = i686-w64-mingw32-ar
+AUTOCONF = ${SHELL} '/home/usagipc/Documents/GitHub/GB_Duino/libserialport/autostuff/missing' autoconf
+AUTOHEADER = ${SHELL} '/home/usagipc/Documents/GitHub/GB_Duino/libserialport/autostuff/missing' autoheader
+AUTOMAKE = ${SHELL} '/home/usagipc/Documents/GitHub/GB_Duino/libserialport/autostuff/missing' automake-1.16
 AWK = gawk
-CC = gcc
+CC = i686-w64-mingw32-gcc
 CCDEPMODE = depmode=gcc3
 CFLAGS = -g -O2
 CPPFLAGS = 
@@ -468,7 +468,7 @@ CTAGS = ctags
 CYGPATH_W = echo
 DEFS = -DHAVE_CONFIG_H
 DEPDIR = .deps
-DLLTOOL = false
+DLLTOOL = i686-w64-mingw32-dlltool
 DSYMUTIL = 
 DUMPBIN = 
 ECHO_C = 
@@ -476,7 +476,7 @@ ECHO_N = -n
 ECHO_T = 
 EGREP = /usr/bin/grep -E
 ETAGS = etags
-EXEEXT = 
+EXEEXT = .exe
 FGREP = /usr/bin/grep -F
 FILECMD = file
 GREP = /usr/bin/grep
@@ -485,7 +485,7 @@ INSTALL_DATA = ${INSTALL} -m 644
 INSTALL_PROGRAM = ${INSTALL}
 INSTALL_SCRIPT = ${INSTALL}
 INSTALL_STRIP_PROGRAM = $(install_sh) -c -s
-LD = /usr/bin/ld -m elf_x86_64
+LD = /usr/bin/i686-w64-mingw32-ld
 LDFLAGS = 
 LIBOBJS = 
 LIBS = 
@@ -494,12 +494,12 @@ LIPO =
 LN_S = ln -s
 LTLIBOBJS = 
 LT_SYS_LIBRARY_PATH = 
-MAKEINFO = ${SHELL} '/home/usagipc/Programmes/GB_Duino/libserialport/autostuff/missing' makeinfo
+MAKEINFO = ${SHELL} '/home/usagipc/Documents/GitHub/GB_Duino/libserialport/autostuff/missing' makeinfo
 MANIFEST_TOOL = :
 MKDIR_P = /usr/bin/mkdir -p
-NM = /usr/bin/nm -B
+NM = /usr/bin/i686-w64-mingw32-nm -B
 NMEDIT = 
-OBJDUMP = objdump
+OBJDUMP = i686-w64-mingw32-objdump
 OBJEXT = o
 OTOOL = 
 OTOOL64 = 
@@ -511,22 +511,22 @@ PACKAGE_TARNAME = libserialport
 PACKAGE_URL = http://sigrok.org/wiki/Libserialport
 PACKAGE_VERSION = 0.1.2
 PATH_SEPARATOR = :
-RANLIB = ranlib
+RANLIB = i686-w64-mingw32-ranlib
 SED = /usr/bin/sed
 SET_MAKE = 
 SHELL = /bin/bash
-SP_LIBS = 
+SP_LIBS = -lsetupapi
 SP_LIB_VERSION = 1:1:1
 SP_PACKAGE_VERSION = 0.1.2
 SP_PKGLIBS = 
-STRIP = strip
+STRIP = i686-w64-mingw32-strip
 VERSION = 0.1.2
-abs_builddir = /home/usagipc/Programmes/GB_Duino/libserialport
-abs_srcdir = /home/usagipc/Programmes/GB_Duino/libserialport
-abs_top_builddir = /home/usagipc/Programmes/GB_Duino/libserialport
-abs_top_srcdir = /home/usagipc/Programmes/GB_Duino/libserialport
-ac_ct_AR = ar
-ac_ct_CC = gcc
+abs_builddir = /home/usagipc/Documents/GitHub/GB_Duino/libserialport
+abs_srcdir = /home/usagipc/Documents/GitHub/GB_Duino/libserialport
+abs_top_builddir = /home/usagipc/Documents/GitHub/GB_Duino/libserialport
+abs_top_srcdir = /home/usagipc/Documents/GitHub/GB_Duino/libserialport
+ac_ct_AR = 
+ac_ct_CC = 
 ac_ct_DUMPBIN = 
 am__include = include
 am__leading_dot = .
@@ -545,15 +545,15 @@ datarootdir = ${prefix}/share
 docdir = ${datarootdir}/doc/${PACKAGE_TARNAME}
 dvidir = ${docdir}
 exec_prefix = ${prefix}
-host = x86_64-pc-linux-gnu
-host_alias = 
-host_cpu = x86_64
-host_os = linux-gnu
-host_vendor = pc
+host = i686-w64-mingw32
+host_alias = i686-w64-mingw32
+host_cpu = i686
+host_os = mingw32
+host_vendor = w64
 htmldir = ${docdir}
 includedir = ${prefix}/include
 infodir = ${datarootdir}/info
-install_sh = ${SHELL} /home/usagipc/Programmes/GB_Duino/libserialport/autostuff/install-sh
+install_sh = ${SHELL} /home/usagipc/Documents/GitHub/GB_Duino/libserialport/autostuff/install-sh
 libdir = ${exec_prefix}/lib
 libexecdir = ${exec_prefix}/libexec
 localedir = ${datarootdir}/locale
@@ -1052,13 +1052,13 @@ test_timing.log: test_timing$(EXEEXT)
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_TEST_LOG_DRIVER_FLAGS) $(TEST_LOG_DRIVER_FLAGS) -- $(TEST_LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
-#.test$(EXEEXT).log:
-#	@p='$<'; \
-#	$(am__set_b); \
-#	$(am__check_pre) $(TEST_LOG_DRIVER) --test-name "$$f" \
-#	--log-file $$b.log --trs-file $$b.trs \
-#	$(am__common_driver_flags) $(AM_TEST_LOG_DRIVER_FLAGS) $(TEST_LOG_DRIVER_FLAGS) -- $(TEST_LOG_COMPILE) \
-#	"$$tst" $(AM_TESTS_FD_REDIRECT)
+.test$(EXEEXT).log:
+	@p='$<'; \
+	$(am__set_b); \
+	$(am__check_pre) $(TEST_LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_TEST_LOG_DRIVER_FLAGS) $(TEST_LOG_DRIVER_FLAGS) -- $(TEST_LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
 distdir: $(BUILT_SOURCES)
 	$(MAKE) $(AM_MAKEFLAGS) distdir-am
 

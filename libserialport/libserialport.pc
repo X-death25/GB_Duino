@@ -9,5 +9,5 @@ URL: http://sigrok.org/wiki/Libserialport
 Requires.private: 
 Version: 0.1.2
 Libs: -L${libdir} -lserialport
-Libs.private: 
+Libs.private: -lsetupapi
 Cflags: -I${includedir}
