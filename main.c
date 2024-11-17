@@ -35,6 +35,8 @@ int check(enum sp_return result)
 
 int main(int argc, char *argv[])
 	{
+	setvbuf(stdout, NULL, _IONBF, 0);
+	
 	unsigned char Game_Name[15];
 	unsigned short Global_Checksum=0;
 
