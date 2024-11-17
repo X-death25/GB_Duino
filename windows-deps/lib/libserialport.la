@@ -5,10 +5,10 @@
 # It is necessary for linking the library.
 
 # The name that we can dlopen(3).
-dlname='../bin/libserialport-0.dll'
+dlname=''
 
 # Names of this library.
-library_names='libserialport.dll.a'
+library_names=''
 
 # The name of the static archive.
 old_library='libserialport.a'
