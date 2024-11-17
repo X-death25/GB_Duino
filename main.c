@@ -55,7 +55,7 @@ int check(enum sp_return result)
 		}
 }
 
-int main()
+int main(int argc, char *argv[])
 	{
 	unsigned char Game_Name[15];
 	unsigned short Global_Checksum=0;
