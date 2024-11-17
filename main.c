@@ -92,7 +92,7 @@ int main()
 	printf("Found %d ports.\n", i);
 
 	struct sp_port *port;
-	check(sp_get_port_by_name("/dev/ttyUSB0", &port));
+	check(sp_get_port_by_name(argv[1], &port));
 	printf("Port name: %s\n", sp_get_port_name(port));
 	printf("Description: %s\n", sp_get_port_description(port));
 
