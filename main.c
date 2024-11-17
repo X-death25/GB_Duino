@@ -91,7 +91,7 @@ int main(int argc, char *argv[])
 
 	/* Allocate a buffer to send and receive data. */
 	unsigned char *Serial_Buffer_IN = malloc(128+1);
-	char *Serial_Buffer_OUT = malloc(128+1);
+	unsigned char *Serial_Buffer_OUT = malloc(128+1);
 
 	/* We'll allow a 4 second timeout for send and receive. */
 	unsigned int timeout = 4000;
