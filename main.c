@@ -14,18 +14,18 @@ int check(enum sp_return result)
 		char *error_message;
 		switch (result) {
 		case SP_ERR_ARG:
-				printf("Error: Invalid argument.\n");
+				fprintf(stderr, "Error: Invalid argument.\n");
 				abort();
 		case SP_ERR_FAIL:
 				error_message = sp_last_error_message();
-				printf("Error: Failed: %s\n", error_message);
+				fprintf(stderr, "Error: Failed: %s\n", error_message);
 				sp_free_error_message(error_message);
 				abort();
 		case SP_ERR_SUPP:
-				printf("Error: Not supported.\n");
+				fprintf(stderr, "Error: Not supported.\n");
 				abort();
 		case SP_ERR_MEM:
-				printf("Error: Couldn't allocate memory.\n");
+				fprintf(stderr, "Error: Couldn't allocate memory.\n");
 				abort();
 		case SP_OK:
 		default:
@@ -35,8 +35,6 @@ int check(enum sp_return result)
 
 int main(int argc, char *argv[])
 	{
-	setvbuf(stdout, NULL, _IONBF, 0);
-	
 	unsigned char Game_Name[15];
 	unsigned short Global_Checksum=0;
 
@@ -54,12 +52,12 @@ int main(int argc, char *argv[])
 	unsigned long k=0;
 
 	struct sp_port **port_list;
-	printf("Getting port list.\n");
+	fprintf(stderr, "Getting port list.\n");
 
 	enum sp_return result = sp_list_ports(&port_list);
 	if (result != SP_OK)
 		{
-		printf("sp_list_ports() failed!\n");
+		fprintf(stderr, "sp_list_ports() failed!\n");
 		return -1;
 		}
 
@@ -67,20 +65,20 @@ int main(int argc, char *argv[])
 		{
 		struct sp_port *port = port_list[i];
 		char *port_name = sp_get_port_name(port);
-		printf("Found port #%i: %s\n", i, port_name);
+		fprintf(stderr, "Found port #%i: %s\n", i, port_name);
 		}
-	printf("Found %d ports.\n", i);
+	fprintf(stderr, "Found %d ports.\n", i);
 
 	struct sp_port *port;
 	check(sp_get_port_by_name(argv[1], &port));
-	printf("Port name: %s\n", sp_get_port_name(port));
-	printf("Description: %s\n", sp_get_port_description(port));
+	fprintf(stderr, "Port name: %s\n", sp_get_port_name(port));
+	fprintf(stderr, "Description: %s\n", sp_get_port_description(port));
 
 	/* The port must be open to access its configuration. */
-	printf("Opening port.\n");
+	fprintf(stderr, "Opening port.\n");
 	check(sp_open(port, SP_MODE_READ_WRITE));	
 		
-	printf("Setting port to 115200 8N1, no flow control.\n");
+	fprintf(stderr, "Setting port to 115200 8N1, no flow control.\n");
 	check(sp_set_baudrate(port, 115200));
 	check(sp_set_bits(port, 8));
 	check(sp_set_parity(port, SP_PARITY_NONE));
@@ -99,7 +97,7 @@ int main(int argc, char *argv[])
 	unsigned int timeout = 4000;
 
 	//Clear Serial Buffer
-	printf("Cleaning Serial Buffer.. Please Wait...\n");
+	fprintf(stderr, "Cleaning Serial Buffer.. Please Wait...\n");
 	sp_blocking_read(rx_port, "~", 128, timeout);
 
     for (i = 0; i < 128; i++)
@@ -112,36 +110,36 @@ int main(int argc, char *argv[])
 	char *data = "~";
 	int size = strlen(data);
 
-	printf("Sending '%s' (%d bytes) on port %s.\n", data, size, sp_get_port_name(tx_port));
+	fprintf(stderr, "Sending '%s' (%d bytes) on port %s.\n", data, size, sp_get_port_name(tx_port));
 	result = check(sp_blocking_write(tx_port, data, size, timeout));
 	/* Check whether we sent all of the data. */
 	if (result == size)
-		printf("Sent %d bytes successfully.\n", size);
+		fprintf(stderr, "Sent %d bytes successfully.\n", size);
 	else
-		printf("Timed out, %d/%d bytes sent.\n", result, size);
+		fprintf(stderr, "Timed out, %d/%d bytes sent.\n", result, size);
 
 	/* Try to receive the data on the other port. */
-	printf("Receiving %d bytes on port %s.\n", 128, sp_get_port_name(rx_port));
+	fprintf(stderr, "Receiving %d bytes on port %s.\n", 128, sp_get_port_name(rx_port));
 	result=0;
 	result=check(sp_blocking_read(rx_port, Serial_Buffer_IN, 128, timeout));
 	
-	//for(int c=0;c<128;c++) printf("Received '%c'.\n", buf[c]);
+	//for(int c=0;c<128;c++) fprintf(stderr, "Received '%c'.\n", buf[c]);
 
-	printf("GB Dumper Ready \n");
-	printf("Hardware Firmware version %d",Serial_Buffer_IN[2]);
-	printf(".%d\n",Serial_Buffer_IN[1]);
-	printf("Software Firmware version %d",MAX_VERSION);
-	printf(".%d\n",MIN_VERSION);
+	fprintf(stderr, "GB Dumper Ready \n");
+	fprintf(stderr, "Hardware Firmware version %d",Serial_Buffer_IN[2]);
+	fprintf(stderr, ".%d\n",Serial_Buffer_IN[1]);
+	fprintf(stderr, "Software Firmware version %d",MAX_VERSION);
+	fprintf(stderr, ".%d\n",MIN_VERSION);
 
-	printf("\nReading ROM Header...\n");
+	fprintf(stderr, "\nReading ROM Header...\n");
 	int j=0;
 	for (i = 0; i < 128; i++)
 		{
-		printf("%02X ",Serial_Buffer_IN[i]);
+		fprintf(stderr, "%02X ",Serial_Buffer_IN[i]);
 		j++;
 		if (j==16)
 			{
-			printf("\n");
+			fprintf(stderr, "\n");
 			j=0;
 			}
 		}
@@ -151,173 +149,173 @@ int main(int argc, char *argv[])
 
 	// Game Name
 	for (i = 0; i < 11; i++) Game_Name[i] = Serial_Buffer_IN[i+9];
-	printf("Game Name : %s \n",Game_Name);
+	fprintf(stderr, "Game Name : %s \n",Game_Name);
 
 	//Cartridge type
 	Rom_Type = Serial_Buffer_IN[28];
 	// Special Cartridge Type ( Ex : MBC30 )
 	if ( Global_Checksum == 0x9A40) Rom_Type = 0x14; // Pokemon Crystal JAP
-	printf("Cartridge Type : %02X ",Rom_Type);
+	fprintf(stderr, "Cartridge Type : %02X ",Rom_Type);
 
 	switch(Rom_Type)
 		{
 		case 0x00:
-			printf("(ROM ONLY)");
+			fprintf(stderr, "(ROM ONLY)");
 			break;
 		case 0x01:
-			printf("(MBC1)");
+			fprintf(stderr, "(MBC1)");
 			break;
 		case 0x02:
-			printf("(MBC1+RAM)");
+			fprintf(stderr, "(MBC1+RAM)");
 			break;
 		case 0x03:
-			printf("(MBC1+RAM+BATTERY)");
+			fprintf(stderr, "(MBC1+RAM+BATTERY)");
 			break;
 		case 0x05:
-			printf("(MBC2)");
+			fprintf(stderr, "(MBC2)");
 			break;
 		case 0x06:
-			printf("(MBC2+BATTERY)");
+			fprintf(stderr, "(MBC2+BATTERY)");
 			break;
 		case 0x08:
-			printf("(ROM+RAM)");
+			fprintf(stderr, "(ROM+RAM)");
 			break;
 		case 0x09:
-			printf("(ROM+RAM+BATTERY)");
+			fprintf(stderr, "(ROM+RAM+BATTERY)");
 			break;
 		case 0x0B:
-			printf("(MMM01)");
+			fprintf(stderr, "(MMM01)");
 			break;
 		case 0x0C:
-			printf("(MMM01+RAM)");
+			fprintf(stderr, "(MMM01+RAM)");
 			break;
 		case 0x0D:
-			printf("(MMM01+RAM+BATTERY)");
+			fprintf(stderr, "(MMM01+RAM+BATTERY)");
 			break;
 		case 0x0F:
-			printf("(MBC3+TIMER+BATTERY)");
+			fprintf(stderr, "(MBC3+TIMER+BATTERY)");
 			break;
 		case 0x10:
-			printf("(MBC3+TIMER+RAM+BATTERY)");
+			fprintf(stderr, "(MBC3+TIMER+RAM+BATTERY)");
 			break;
 		case 0x11:
-			printf("(MBC3)");
+			fprintf(stderr, "(MBC3)");
 			break;
 		case 0x12:
-			printf("(MBC3+RAM)");
+			fprintf(stderr, "(MBC3+RAM)");
 			break;
 		case 0x13:
-			printf("(MBC3+RAM+BATTERY)");
+			fprintf(stderr, "(MBC3+RAM+BATTERY)");
 			break;
 		case 0x14:
-			printf("(MBC30+TIMER+RAM+BATTERY)");
+			fprintf(stderr, "(MBC30+TIMER+RAM+BATTERY)");
 			break;
 		case 0x19:
-			printf("(MBC5)");
+			fprintf(stderr, "(MBC5)");
 			break;
 		case 0x1A:
-			printf("(MBC5+RAM)");
+			fprintf(stderr, "(MBC5+RAM)");
 			break;
 		case 0x1B:
-			printf("(MBC5+RAM+BATTERY)");
+			fprintf(stderr, "(MBC5+RAM+BATTERY)");
 			break;
 		case 0x1C:
-			printf("(MBC5+RUMBLE)");
+			fprintf(stderr, "(MBC5+RUMBLE)");
 			break;
 		case 0x1D:
-			printf("(MBC5+RUMBLE+RAM)");
+			fprintf(stderr, "(MBC5+RUMBLE+RAM)");
 			break;
 		case 0x1E:
-			printf("(MBC5+RUMBLE+RAM+BATTERY)");
+			fprintf(stderr, "(MBC5+RUMBLE+RAM+BATTERY)");
 			break;
 		case 0x20:
-			printf("(MBC6)");
+			fprintf(stderr, "(MBC6)");
 			break;
 		case 0x22:
-			printf("(MBC7+SENSOR+RUMBLE+RAM+BATTERY)");
+			fprintf(stderr, "(MBC7+SENSOR+RUMBLE+RAM+BATTERY)");
 			break;
 		case 0xFC:
-			printf("(POCKET CAMERA)");
+			fprintf(stderr, "(POCKET CAMERA)");
 			break;
 		case 0xFD:
-			printf("(BANDAI TAMA5)");
+			fprintf(stderr, "(BANDAI TAMA5)");
 			break;
 		case 0xFE:
-			printf("(HuC3)");
+			fprintf(stderr, "(HuC3)");
 			break;
 		case 0xFF:
-			printf("(HuC1+RAM+BATTERY)");
+			fprintf(stderr, "(HuC1+RAM+BATTERY)");
 			break;
 		default:
-			printf("(Unknown)");
+			fprintf(stderr, "(Unknown)");
 			break;
 		}	
 	
 	//Game Size
 	Rom_Size = Serial_Buffer_IN[29];
-	printf("\nGame Size : ");
+	fprintf(stderr, "\nGame Size : ");
 	switch(Rom_Size)
 		{
 		case 0x00:
-			printf("32 Ko");
+			fprintf(stderr, "32 Ko");
 			game_size=32*1024;
 			break;
 		case 0x01:
-			printf("64 Ko");
+			fprintf(stderr, "64 Ko");
 			game_size=64*1024;
 			break;
 		case 0x02:
-			printf("128 Ko");
+			fprintf(stderr, "128 Ko");
 			game_size=128*1024;
 			break;
 		case 0x03:
-			printf("256 Ko ");
+			fprintf(stderr, "256 Ko ");
 			game_size=256*1024;
 			break;
 		case 0x04:
-			printf("512 Ko");
+			fprintf(stderr, "512 Ko");
 			game_size=512*1024;
 			break;
 		case 0x05:
-			printf("1024 Ko");
+			fprintf(stderr, "1024 Ko");
 			game_size=1024*1024;
 			break;
 		case 0x06:
-			printf("2048 Ko");
+			fprintf(stderr, "2048 Ko");
 			game_size=2048*1024;
 			break;
 		case 0x07:
-			printf("4096 Ko");
+			fprintf(stderr, "4096 Ko");
 			game_size=4096*1024;
 			break;
 		}
 	
 	//Backup RAM Size
 	Ram_Size = Serial_Buffer_IN[30];
-	printf("\nBackup RAM Size : ");
+	fprintf(stderr, "\nBackup RAM Size : ");
 	switch(Ram_Size)
 		{
 		case 0x00:
-			printf("N/A");
+			fprintf(stderr, "N/A");
 			break;
 		case 0x01:
-			printf("2 Ko");
+			fprintf(stderr, "2 Ko");
 			save_size=2*1024;
 			break;
 		case 0x02:
-			printf("8 Ko");
+			fprintf(stderr, "8 Ko");
 			save_size=8*1024;
 			break;
 		case 0x03:
-			printf("32 Ko ");
+			fprintf(stderr, "32 Ko ");
 			save_size=32*1024;
 			break;
 		case 0x05:
-			printf("64 Ko");
+			fprintf(stderr, "64 Ko");
 			save_size=64*1024;
 			break;
 		case 0x04:
-			printf("128 Ko");
+			fprintf(stderr, "128 Ko");
 			save_size=128*1024;
 			break;
 		}
@@ -325,22 +323,22 @@ int main(int argc, char *argv[])
 	// CGB and SGB
 	CGB = Serial_Buffer_IN[24];
 	if ( CGB  == 0xC0)
-		printf("\nGame only works on GameBoy Color");
+		fprintf(stderr, "\nGame only works on GameBoy Color");
 	else
-		printf("\nGameBoy / GameBoy Color compatible game");
+		fprintf(stderr, "\nGameBoy / GameBoy Color compatible game");
 
 	SGB = Serial_Buffer_IN[27];
 	if ( SGB  == 0x03)
-		printf("\nGame have Super GameBoy enhancements\n");
+		fprintf(stderr, "\nGame have Super GameBoy enhancements\n");
 	else
-		printf("\nNo Super GameBoy enhancements\n");
+		fprintf(stderr, "\nNo Super GameBoy enhancements\n");
 
 	//READ ROM
 	BufferROM = (unsigned char*)malloc(game_size);
 	for (k = 0; k < game_size; k++) BufferROM[k] = 0xFF;
 	k=0;
 
-	printf("Starting ROM dump...\n");   
+	fprintf(stderr, "Starting ROM dump...\n");   
     sp_flush(rx_port,0);
 
 	unsigned char first_packet=0;
@@ -382,14 +380,14 @@ int main(int argc, char *argv[])
                 }
             i=0;
             }
-        printf("\rROM dump in progress: %ld%%",(100*k)/(game_size/1024)/1024);
+        fprintf(stderr, "\rROM dump in progress: %ld%%",(100*k)/(game_size/1024)/1024);
         fflush(stdout);
         }
 
 	if ( CGB  == 0xC0) myfile = fopen("dump_gbc.gbc","wb");
     else myfile = fopen("dump_gb.gb","wb");
 
-    printf("\nFile Saved !\n");
+    fprintf(stderr, "\nFile Saved !\n");
 	
 	fwrite(BufferROM, 1,game_size, myfile);
     fclose(myfile);
