@@ -1,7 +1,3 @@
-//Linux Command : gcc main.c -I./linux-deps/include -L./linux-deps/lib -o GBDuino -lserialport
-//colordiff -y <(xxd ./dump_gbc.gbc) <(xxd /home/usagipc/Jeux/GameBoy_GameBoyColor/Micro_Machines_1_and_2_Twin_Turbo.gbc) > results.txt
-//colordiff -y <(xxd ./dump_gb.gb) <(xxd /home/usagipc/Jeux/GameBoy_GameBoyColor/Kirby_s_Dream_Land.gb) > results.txt
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
