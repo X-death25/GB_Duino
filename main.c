@@ -118,6 +118,16 @@ int main(int argc, char *argv[])
 	else
 		printf("Timed out, %d/%d bytes sent.\n", result, size);
 
+	// Do it twice for fix issue with CH-314 bullshit chinese coolie
+
+	printf("Sending '%s' (%d bytes) on port %s.\n", data, size, sp_get_port_name(tx_port));
+	result = check(sp_blocking_write(tx_port, data, size, timeout));
+	/* Check whether we sent all of the data. */
+	if (result == size)
+		printf("Sent %d bytes successfully.\n", size);
+	else
+		printf("Timed out, %d/%d bytes sent.\n", result, size);
+
 	/* Try to receive the data on the other port. */
 	printf("Receiving %d bytes on port %s.\n", 128, sp_get_port_name(rx_port));
 	result=0;
