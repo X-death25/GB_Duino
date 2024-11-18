@@ -108,25 +108,17 @@ int main(int argc, char *argv[])
     i=0;
 
 	char *data = "~";
-	int size = strlen(data);
+	int size = strlen(Serial_Buffer_OUT);
 
-	printf("Sending '%s' (%d bytes) on port %s.\n", data, size, sp_get_port_name(tx_port));
-	result = check(sp_blocking_write(tx_port, data, size, timeout));
+    Serial_Buffer_OUT[0] = 0x7E;
+
+	printf("Sending (128 bytes) on port %s.\n", sp_get_port_name(tx_port));
+	result = check(sp_blocking_write(tx_port, Serial_Buffer_OUT, size, timeout));
 	/* Check whether we sent all of the data. */
 	if (result == size)
 		printf("Sent %d bytes successfully.\n", size);
 	else
-		printf("Timed out, %d/%d bytes sent.\n", result, size);
-
-	// Do it twice for fix issue with CH-314 bullshit chinese coolie
-
-	printf("Sending '%s' (%d bytes) on port %s.\n", data, size, sp_get_port_name(tx_port));
-	result = check(sp_blocking_write(tx_port, data, size, timeout));
-	/* Check whether we sent all of the data. */
-	if (result == size)
-		printf("Sent %d bytes successfully.\n", size);
-	else
-		printf("Timed out, %d/%d bytes sent.\n", result, size);
+		printf("Timed out, %d/%d bytes sent.\n", result, 128);
 
 	/* Try to receive the data on the other port. */
 	printf("Receiving %d bytes on port %s.\n", 128, sp_get_port_name(rx_port));
