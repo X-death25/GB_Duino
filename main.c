@@ -113,7 +113,7 @@ int main(int argc, char *argv[])
     Serial_Buffer_OUT[0] = 0x7E;
 
 	printf("Sending (128 bytes) on port %s.\n", sp_get_port_name(tx_port));
-	result = check(sp_blocking_write(tx_port, Serial_Buffer_OUT, size, timeout));
+	result = check(sp_blocking_write(tx_port, Serial_Buffer_OUT, 128, timeout));
 	/* Check whether we sent all of the data. */
 	if (result == size)
 		printf("Sent %d bytes successfully.\n", size);
