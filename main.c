@@ -113,7 +113,7 @@ int main(int argc, char *argv[])
     Serial_Buffer_OUT[0] = 0x7E;
 
 	printf("Sending (128 bytes) on port %s.\n", sp_get_port_name(tx_port));
-	result = check(sp_blocking_write(tx_port, Serial_Buffer_OUT, 128, timeout));
+	result = check(sp_blocking_write(tx_port, Serial_Buffer_OUT, 128, 0));
 	/* Check whether we sent all of the data. */
 	if (result == size)
 		printf("Sent %d bytes successfully.\n", size);
@@ -123,7 +123,7 @@ int main(int argc, char *argv[])
 	/* Try to receive the data on the other port. */
 	printf("Receiving %d bytes on port %s.\n", 128, sp_get_port_name(rx_port));
 	result=0;
-	result=check(sp_blocking_read(rx_port, Serial_Buffer_IN, 128, timeout));
+	result=check(sp_blocking_read(rx_port, Serial_Buffer_IN, 128,0));
 	
 	//for(int c=0;c<128;c++) printf("Received '%c'.\n", buf[c]);
 
@@ -372,8 +372,8 @@ int main(int argc, char *argv[])
         else
             {
 			char data1[1];	data1[0]=0xAA;
-            sp_blocking_write(tx_port, data1, 1, 20);
-            sp_blocking_read(rx_port, Serial_Buffer_IN, 128, 100);
+            sp_blocking_write(tx_port, data1, 1,0);
+            sp_blocking_read(rx_port, Serial_Buffer_IN, 128,0);
             i=0;
             for (i = 0; i < 128; i++)
 				{
