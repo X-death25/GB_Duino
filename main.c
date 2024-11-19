@@ -96,19 +96,11 @@ int main(int argc, char *argv[])
 	/* We'll allow a 4 second timeout for send and receive. */
 	unsigned int timeout = 4000;
 
-	//Clear Serial Buffer
-	printf("Cleaning Serial Buffer.. Please Wait...\n");
-	
 	char *data = "~";
 	int size = strlen(data);
 
-    for (i = 0; i < 128; i++)
-		{
-        Serial_Buffer_IN[i] = 0x00;
-        Serial_Buffer_OUT[i] = 0x00;
-		}
-    i=0;
-	
+	//Clear Serial Buffer
+	printf("Cleaning Serial Buffer.. Please Wait...\n");
 	sp_blocking_write(tx_port, data, size, timeout);
 	sp_blocking_read(rx_port, Serial_Buffer_IN, 128, timeout);
 
@@ -366,8 +358,8 @@ int main(int argc, char *argv[])
 		if ( first_packet == 0)
 			{
 			Serial_Buffer_OUT[0]=0x45;
-			sp_blocking_write(tx_port, Serial_Buffer_OUT, 128, 20);
-            sp_blocking_read(rx_port, Serial_Buffer_IN, 128, 100);
+			sp_blocking_write(tx_port, Serial_Buffer_OUT, 128, 200);
+            sp_blocking_read(rx_port, Serial_Buffer_IN, 128, 200);
             for (i = 0; i < 128; i++)
 				{
                 BufferROM[k] = Serial_Buffer_IN[i];
@@ -379,8 +371,8 @@ int main(int argc, char *argv[])
         else
             {
 			char data1[1];	data1[0]=0xAA;
-            sp_blocking_write(tx_port, data1, 1, 20);
-            sp_blocking_read(rx_port, Serial_Buffer_IN, 128, 100);
+            sp_blocking_write(tx_port, data1, 1, 200);
+            sp_blocking_read(rx_port, Serial_Buffer_IN, 128, 200);
             i=0;
             for (i = 0; i < 128; i++)
 				{
