@@ -168,7 +168,7 @@ int main(int argc, char *argv[])
 	printf(".%d\n",Serial_Buffer_IN[1]);
 	printf("Software Firmware version %d",MAX_VERSION);
 	printf(".%d\n",MIN_VERSION);
-	/*
+	
 
 	printf("\nReading ROM Header...\n");
 	int j=0;
@@ -438,8 +438,8 @@ int main(int argc, char *argv[])
 	
 	// Free the array created by sp_list_ports(). 
 
-	sp_free_port_list(port_list);
-	*/
+	// sp_free_port_list(port_list);
+	
 
 
 	/* Note that this will also free all the sp_port structures
