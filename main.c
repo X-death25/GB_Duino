@@ -149,25 +149,26 @@ int main(int argc, char *argv[])
 	printf("Sending '%s' (%d bytes) on port %s.\n", data, size, sp_get_port_name(tx_port));
 	sp_blocking_write(tx_port, data, size, timeout);
 	// Check whether we sent all of the data. 
-	if (result == size)
+	/*if (result == size)
 		printf("Sent %d bytes successfully.\n", size);
 	else
-		printf("Timed out, %d/%d bytes sent.\n", result, size);
+		printf("Timed out, %d/%d bytes sent.\n", result, size);*/
 
 	// Try to receive the data on the other port. 
-	printf("Receiving %d bytes on port %s.\n", 128, sp_get_port_name(rx_port));
-	result=0;
-	result=sp_blocking_read(rx_port, Serial_Buffer_IN, 128, timeout);
+	//printf("Receiving %d bytes on port %s.\n", 128, sp_get_port_name(rx_port));
+	//result=0;
+     sp_blocking_read(rx_port, Serial_Buffer_IN, 128, timeout);
 	
 	//for(int c=0;c<128;c++) printf("Received '%c'.\n", buf[c]);
 
 
-/*
+
 	printf("GB Dumper Ready \n");
 	printf("Hardware Firmware version %d",Serial_Buffer_IN[2]);
 	printf(".%d\n",Serial_Buffer_IN[1]);
 	printf("Software Firmware version %d",MAX_VERSION);
 	printf(".%d\n",MIN_VERSION);
+	/*
 
 	printf("\nReading ROM Header...\n");
 	int j=0;
