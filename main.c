@@ -78,8 +78,8 @@ int main(int argc, char *argv[])
 	printf("Opening port.\n");
 	check(sp_open(port, SP_MODE_READ_WRITE));	
 		
-	printf("Setting port to 115200 8N1, no flow control.\n");
-	check(sp_set_baudrate(port, 38400));
+	printf("Setting port to 19200 8N1, no flow control.\n");
+	check(sp_set_baudrate(port, 19200));
 	check(sp_set_bits(port, 8));
 	check(sp_set_parity(port, SP_PARITY_NONE));
 	check(sp_set_stopbits(port, 1));
