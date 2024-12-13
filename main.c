@@ -105,20 +105,20 @@ int main(int argc, char *argv[])
 	printf("Found %d ports.\n", i);
 */
 	struct sp_port *port;
-	check(sp_get_port_by_name(argv[1], &port));
+	sp_get_port_by_name(argv[1], &port);
 	printf("Port name: %s\n", sp_get_port_name(port));
 	printf("Description: %s\n", sp_get_port_description(port));
 
 	// The port must be open to access its configuration. 
 	printf("Opening port.\n");
-	check(sp_open(port, SP_MODE_READ_WRITE));	
+	sp_open(port, SP_MODE_READ_WRITE);	
 		
 	printf("Setting port to 19200 8N1, no flow control.\n");
-	check(sp_set_baudrate(port, 19200));
-	check(sp_set_bits(port, 8));
-	check(sp_set_parity(port, SP_PARITY_NONE));
-	check(sp_set_stopbits(port, 1));
-	check(sp_set_flowcontrol(port, SP_FLOWCONTROL_NONE));	
+	sp_set_baudrate(port, 19200);
+	sp_set_bits(port, 8);
+	sp_set_parity(port, SP_PARITY_NONE);
+	sp_set_stopbits(port, 1);
+	sp_set_flowcontrol(port, SP_FLOWCONTROL_NONE);	
 
 	// Get the ports to send and receive on. 
 	struct sp_port *tx_port = port;
