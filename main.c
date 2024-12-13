@@ -81,7 +81,7 @@ int main(int argc, char *argv[])
     }
 
     // Afficher les informations
-    printf("Port série : %s\n", argv[1]);
+    printf("Port serie : %s\n", argv[1]);
     printf("Mode       : %s\n", (strcmp(argv[2], "-read") == 0) ? "Lecture" : "Écriture");
     printf("Type       : %s\n", argv[3]);
 
@@ -103,7 +103,7 @@ int main(int argc, char *argv[])
 		printf("Found port #%i: %s\n", i, port_name);
 		}
 	printf("Found %d ports.\n", i);
-
+*/
 	struct sp_port *port;
 	check(sp_get_port_by_name(argv[1], &port));
 	printf("Port name: %s\n", sp_get_port_name(port));
