@@ -147,7 +147,7 @@ int main(int argc, char *argv[])
     i=0;
 
 	printf("Sending '%s' (%d bytes) on port %s.\n", data, size, sp_get_port_name(tx_port));
-	check(sp_blocking_write(tx_port, data, size, timeout);
+	sp_blocking_write(tx_port, data, size, timeout);
 	// Check whether we sent all of the data. 
 	if (result == size)
 		printf("Sent %d bytes successfully.\n", size);
@@ -157,7 +157,7 @@ int main(int argc, char *argv[])
 	// Try to receive the data on the other port. 
 	printf("Receiving %d bytes on port %s.\n", 128, sp_get_port_name(rx_port));
 	result=0;
-	result=check(sp_blocking_read(rx_port, Serial_Buffer_IN, 128, timeout));
+	result=sp_blocking_read(rx_port, Serial_Buffer_IN, 128, timeout);
 	
 	//for(int c=0;c<128;c++) printf("Received '%c'.\n", buf[c]);
 
@@ -445,5 +445,7 @@ int main(int argc, char *argv[])
 	 * it points to. If you want to keep one of them (e.g. to
 	 * use that port in the rest of your program), take a copy
 	 * of it first using sp_copy_port(). */
+
+
 	return 0;
 	}
