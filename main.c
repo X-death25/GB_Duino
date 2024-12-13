@@ -433,7 +433,7 @@ int main(int argc, char *argv[])
 
 	free(Serial_Buffer_IN);
 	free(Serial_Buffer_OUT);	
-	check(sp_close(port));
+	sp_close(port);
 	sp_free_port(port);
 	
 	// Free the array created by sp_list_ports(). 
