@@ -7,10 +7,10 @@
 
 #include <libserialport.h>
 
-/* Helper function for error handling. */
-int check(enum sp_return result)
+//Helper function for error handling. */
+/*int check(enum sp_return result)
 {
-		/* For this example we'll just exit on any error by calling abort(). */
+		// For this example we'll just exit on any error by calling abort(). 
 		char *error_message;
 		switch (result) {
 		case SP_ERR_ARG:
@@ -31,7 +31,7 @@ int check(enum sp_return result)
 		default:
 				return result;
 		}
-}
+}*/
 
 int main(int argc, char *argv[])
 	{
@@ -51,6 +51,41 @@ int main(int argc, char *argv[])
 	unsigned long i=0;
 	unsigned long k=0;
 
+
+     // Vérifier le nombre d'arguments
+
+    if (argc != 4) {
+        printf("Usage: %s <port> <mode> <type>\n", argv[0]);
+        printf("  <port>: COM1, COM2, COM3, ...\n");
+        printf("  <mode>: -read ou -write\n");
+        printf("  <type>: auto, MBC1, MBC2\n");
+        return 1;
+    }
+
+	// Vérifier le premier argument (port série)
+    if (strncmp(argv[1], "COM", 3) != 0 || strlen(argv[1]) < 4) {
+        printf("Le premier argument doit être un port série valide (ex: COM1, COM2).\n");
+        return 1;
+    }
+
+	// Vérifier le deuxième argument (mode)
+    if (strcmp(argv[2], "-read") != 0 && strcmp(argv[2], "-write") != 0) {
+        printf("Le deuxième argument doit être '-read' ou '-write'.\n");
+        return 1;
+    }
+
+	// Vérifier le troisième argument (type)
+    if (strcmp(argv[3], "auto") != 0 && strcmp(argv[3], "MBC1") != 0 && strcmp(argv[3], "MBC2") != 0) {
+        printf("Le troisième argument doit être 'auto', 'MBC1', ou 'MBC2'.\n");
+        return 1;
+    }
+
+    // Afficher les informations
+    printf("Port série : %s\n", argv[1]);
+    printf("Mode       : %s\n", (strcmp(argv[2], "-read") == 0) ? "Lecture" : "Écriture");
+    printf("Type       : %s\n", argv[3]);
+
+/*
 	struct sp_port **port_list;
 	printf("Getting port list.\n");
 
@@ -74,7 +109,7 @@ int main(int argc, char *argv[])
 	printf("Port name: %s\n", sp_get_port_name(port));
 	printf("Description: %s\n", sp_get_port_description(port));
 
-	/* The port must be open to access its configuration. */
+	// The port must be open to access its configuration. 
 	printf("Opening port.\n");
 	check(sp_open(port, SP_MODE_READ_WRITE));	
 		
@@ -85,15 +120,15 @@ int main(int argc, char *argv[])
 	check(sp_set_stopbits(port, 1));
 	check(sp_set_flowcontrol(port, SP_FLOWCONTROL_NONE));	
 
-	/* Get the ports to send and receive on. */
+	// Get the ports to send and receive on. 
 	struct sp_port *tx_port = port;
 	struct sp_port *rx_port = port;
 
-	/* Allocate a buffer to send and receive data. */
+	// Allocate a buffer to send and receive data. 
 	unsigned char *Serial_Buffer_IN = malloc(128+1);
 	unsigned char *Serial_Buffer_OUT = malloc(128+1);
 
-	/* We'll allow a 4 second timeout for send and receive. */
+	// We'll allow a 4 second timeout for send and receive. 
 	unsigned int timeout = 4000;
 
 	char *data = "~";
@@ -113,19 +148,24 @@ int main(int argc, char *argv[])
 
 	printf("Sending '%s' (%d bytes) on port %s.\n", data, size, sp_get_port_name(tx_port));
 	result = check(sp_blocking_write(tx_port, data, size, timeout));
-	/* Check whether we sent all of the data. */
+	// Check whether we sent all of the data. 
 	if (result == size)
 		printf("Sent %d bytes successfully.\n", size);
 	else
 		printf("Timed out, %d/%d bytes sent.\n", result, size);
 
-	/* Try to receive the data on the other port. */
+	// Try to receive the data on the other port. 
 	printf("Receiving %d bytes on port %s.\n", 128, sp_get_port_name(rx_port));
 	result=0;
 	result=check(sp_blocking_read(rx_port, Serial_Buffer_IN, 128, timeout));
 	
 	//for(int c=0;c<128;c++) printf("Received '%c'.\n", buf[c]);
 
+	*/
+
+
+
+/*
 	printf("GB Dumper Ready \n");
 	printf("Hardware Firmware version %d",Serial_Buffer_IN[2]);
 	printf(".%d\n",Serial_Buffer_IN[1]);
@@ -398,8 +438,12 @@ int main(int argc, char *argv[])
 	check(sp_close(port));
 	sp_free_port(port);
 	
-	/* Free the array created by sp_list_ports(). */
+	// Free the array created by sp_list_ports(). 
+
 	sp_free_port_list(port_list);
+	*/
+
+
 	/* Note that this will also free all the sp_port structures
 	 * it points to. If you want to keep one of them (e.g. to
 	 * use that port in the rest of your program), take a copy
