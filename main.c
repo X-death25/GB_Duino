@@ -466,7 +466,7 @@ int main(int argc, char *argv[])
 	//READ ROM command
 
 		
-else if ((strcmp(argv[2], "-backup") == 1 )) 
+else if (strcmp(argv[2], "-backup") == 0) 
 {
         printf("Backup RAM Command ! \n");
 }
@@ -484,6 +484,6 @@ else if ((strcmp(argv[2], "-backup") == 1 ))
 	 * use that port in the rest of your program), take a copy
 	 * of it first using sp_copy_port(). */
 
-
+    printf("Type       : %s\n", argv[3]);
 	return 0;
 	}
