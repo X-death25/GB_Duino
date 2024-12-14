@@ -360,6 +360,8 @@ int main(int argc, char *argv[])
 		}
 
 	// CGB and SGB
+
+
 	CGB = Serial_Buffer_IN[24];
 	if ( CGB  == 0xC0)
 		printf("\nGame only works on GameBoy Color");
@@ -372,7 +374,21 @@ int main(int argc, char *argv[])
 	else
 		printf("\nNo Super GameBoy enhancements\n");
 
-	//READ ROM
+
+
+	
+
+	//READ ROM command
+
+		
+ if ((strcmp(argv[2], "-read") == 1 ) 
+{
+        printf("DUMP ROM Command ! \n");
+        
+   
+
+
+
 	BufferROM = (unsigned char*)malloc(game_size);
 	for (k = 0; k < game_size; k++) BufferROM[k] = 0xFF;
 	k=0;
@@ -435,6 +451,18 @@ int main(int argc, char *argv[])
 	free(Serial_Buffer_OUT);	
 	sp_close(port);
 	sp_free_port(port);
+}
+
+
+	//READ ROM command
+
+		
+ if ((strcmp(argv[2], "-backup") == 1 ) 
+{
+        printf("Backup RAM Command ! \n");
+}
+
+
 	
 	// Free the array created by sp_list_ports(). 
 
