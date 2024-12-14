@@ -197,7 +197,7 @@ int main(int argc, char *argv[])
 
 	// Game Name
 	for (i = 0; i < 11; i++) Game_Name[i] = Serial_Buffer_IN[i+9];
-	printf("\nGame Name : %s \n",Game_Name);
+	printf("Game Name : %s \n",Game_Name);
 
 	//Cartridge type
 	Rom_Type = Serial_Buffer_IN[28];
@@ -465,8 +465,6 @@ int main(int argc, char *argv[])
 
 	//READ ROM command
 
-printf("\n");
-printf("\n");
 		
 else if (strcmp(argv[2], "-backup") == 0) 
 {
@@ -486,6 +484,6 @@ else if (strcmp(argv[2], "-backup") == 0)
 	 * use that port in the rest of your program), take a copy
 	 * of it first using sp_copy_port(). */
 
-    printf("Type       : %s\n", argv[3]);
+    
 	return 0;
 	}
