@@ -57,7 +57,7 @@ int main(int argc, char *argv[])
     if (argc != 4) {
         printf("Usage: %s <port> <mode> <type>\n", argv[0]);
         printf("  <port>: COM1, COM2, COM3, ...\n");
-        printf("  <mode>: -read ou -write\n");
+        printf("  <mode>: -read, -write, -backup, -restore\n");
         printf("  <type>: auto, MBC1, MBC2\n");
         return 1;
     }
@@ -68,9 +68,10 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-	// Vérifier le deuxième argument (mode)
-    if (strcmp(argv[2], "-read") != 0 && strcmp(argv[2], "-write") != 0 && strcmp(argv[2], "-backup") != 0) {
-        printf("Le deuxième argument doit être '-read' ou '-write'.\n");
+  // Vérifier le deuxième argument (mode)
+    if (strcmp(argv[2], "-read") != 0 && strcmp(argv[2], "-write") != 0 &&
+        strcmp(argv[2], "-backup") != 0 && strcmp(argv[2], "-restore") != 0) {
+        printf("Le deuxième argument doit être '-read', '-write', '-backup' ou '-restore'.\n");
         return 1;
     }
 
@@ -80,10 +81,18 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    // Afficher les informations
-    printf("Port serie : %s\n", argv[1]);
-    printf("Mode       : %s\n", (strcmp(argv[2], "-read") == 0) ? "Lecture" : "Écriture");
-    printf("Type       : %s\n", argv[3]);
+  // Afficher les informations
+    printf("Port série : %s\n", argv[1]);
+
+    if (strcmp(argv[2], "-read") == 0) {
+        printf("Mode       : Read ROM\n");
+    } else if (strcmp(argv[2], "-write") == 0) {
+        printf("Mode       : Write ROM\n");
+    } else if (strcmp(argv[2], "-backup") == 0) {
+        printf("Mode       : Read Backup RAM\n");
+    } else if (strcmp(argv[2], "-restore") == 0) {
+        printf("Mode       : Write Backup RAM\n");
+    }
 
 /*
 	struct sp_port **port_list;
