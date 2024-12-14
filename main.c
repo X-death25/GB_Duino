@@ -381,7 +381,7 @@ int main(int argc, char *argv[])
 	//READ ROM command
 
 		
- if ((strcmp(argv[2], "-read") == 1 ) 
+ if ((strcmp(argv[2], "-read") == 1 )) 
 {
         printf("DUMP ROM Command ! \n");
         
@@ -457,7 +457,7 @@ int main(int argc, char *argv[])
 	//READ ROM command
 
 		
- if ((strcmp(argv[2], "-backup") == 1 ) 
+ if ((strcmp(argv[2], "-backup") == 1 )) 
 {
         printf("Backup RAM Command ! \n");
 }
