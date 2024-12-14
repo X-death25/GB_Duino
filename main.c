@@ -457,7 +457,7 @@ int main(int argc, char *argv[])
 	//READ ROM command
 
 		
- if ((strcmp(argv[2], "-backup") == 1 )) 
+else if ((strcmp(argv[2], "-backup") == 1 )) 
 {
         printf("Backup RAM Command ! \n");
 }
