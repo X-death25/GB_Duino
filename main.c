@@ -509,7 +509,7 @@ else if (strcmp(argv[2], "-backup") == 0)
             i=0;
             for (i = 0; i < 128; i++)
 				{
-                BufferROM[k] = Serial_Buffer_IN[i];
+                BufferSAVE[k] = Serial_Buffer_IN[i];
                 k++;
                 }
             i=0;
