@@ -39,6 +39,7 @@ int main(int argc, char *argv[])
 	unsigned short Global_Checksum=0;
 
 	unsigned char *BufferROM;
+	unsigned char *BufferSAVE;
 
 	unsigned char Rom_Type=0;
 	unsigned char Rom_Size=0;
@@ -179,7 +180,7 @@ int main(int argc, char *argv[])
 	printf(".%d\n",MIN_VERSION);
 	
 
-	printf("\nReading ROM Header...\n");
+	printf("\nReading ROM Header...\n\n");
 	int j=0;
 	for (i = 0; i < 128; i++)
 		{
@@ -387,17 +388,15 @@ int main(int argc, char *argv[])
 
 	
 
-	//READ ROM command
+//******************* */
+//READ ROM command
+//*********************/
 
 		
  if ((strcmp(argv[2], "-read") == 1 )) 
 {
-        printf("DUMP ROM Command ! \n");
+    printf("DUMP ROM Command ! \n");
         
-   
-
-
-
 	BufferROM = (unsigned char*)malloc(game_size);
 	for (k = 0; k < game_size; k++) BufferROM[k] = 0xFF;
 	k=0;
@@ -462,13 +461,76 @@ int main(int argc, char *argv[])
 	sp_free_port(port);
 }
 
-
-	//READ ROM command
+//******************* */
+//Backup RAM command
+//*********************/
 
 		
 else if (strcmp(argv[2], "-backup") == 0) 
 {
-        printf("\nBackup RAM Command ! \n");
+        printf("\nBackup RAM Command : \n");
+		BufferSAVE = (unsigned char*)malloc(save_size);
+
+		sp_flush(rx_port,0);
+	
+	for (i = 0; i < 128; i++)
+		{
+		Serial_Buffer_IN[i] = 0x00;
+		Serial_Buffer_OUT[i] = 0x00;
+		}
+	     i=0;
+
+        for (k = 0; k < save_size; k++)
+        {
+            BufferSAVE[k] = 0xFF;
+        }
+        k=0;
+        i=0;
+
+		printf("Starting Backup RAM dump...\n");
+
+		while ( k < (save_size) )
+		{
+    
+		if ( first_packet == 0)
+			{
+			Serial_Buffer_OUT[0]=0x47;
+			sp_blocking_write(tx_port, Serial_Buffer_OUT, 128, 200);
+            first_packet=1;
+            }
+        else
+            {
+			char data1[1];	data1[0]=0xAA;
+            sp_blocking_write(tx_port, data1, 1, 200);
+            sp_blocking_read(rx_port, Serial_Buffer_IN, 128, 200);
+            i=0;
+            for (i = 0; i < 128; i++)
+				{
+                BufferROM[k] = Serial_Buffer_IN[i];
+                k++;
+                }
+            i=0;
+            }
+        printf("\rBackup RAM dump in progress: %ld%%",(100*k)/(save_size/1024)/1024);
+        fflush(stdout);
+        }
+
+	if ( CGB  == 0xC0) myfile = fopen("dump_gbc.sav","wb");
+    else myfile = fopen("dump_gb.sav","wb");
+
+    printf("\nFile Saved !\n");
+	
+	fwrite(BufferSAVE, 1,save_size, myfile);
+    fclose(myfile);
+
+	free(Serial_Buffer_IN);
+	free(Serial_Buffer_OUT);	
+	sp_close(port);
+	sp_free_port(port);
+
+
+
+
 }
 
 
