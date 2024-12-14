@@ -58,8 +58,7 @@ int main(int argc, char *argv[])
     if (argc != 4) {
         printf("Usage: %s <port> <mode> <type>\n", argv[0]);
         printf("  <port>: COM1, COM2, COM3, ...\n");
-        printf("  <mode>: -read, -write, -backup, -restore\n");
-        printf("  <type>: auto, MBC1, MBC2\n");
+        printf("  <mode>: -read, -write, -backup, -restore, -erase\n");
         return 1;
     }
 
@@ -76,11 +75,6 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-	// Vérifier le troisième argument (type)
-    if (strcmp(argv[3], "auto") != 0 && strcmp(argv[3], "MBC1") != 0 && strcmp(argv[3], "MBC2") != 0) {
-        printf("Le troisième argument doit être 'auto', 'MBC1', ou 'MBC2'.\n");
-        return 1;
-    }
 
   // Afficher les informations
     printf("Port série : %s\n", argv[1]);
@@ -93,6 +87,8 @@ int main(int argc, char *argv[])
         printf("Mode       : Read Backup RAM\n");
     } else if (strcmp(argv[2], "-restore") == 0) {
         printf("Mode       : Write Backup RAM\n");
+    } else if (strcmp(argv[2], "-erase") == 0) {
+        printf("Mode       : Erase Backup RAM\n");
     }
 
 /*
@@ -468,7 +464,7 @@ int main(int argc, char *argv[])
 		
 else if (strcmp(argv[2], "-backup") == 0) 
 {
-        printf("\nBackup RAM Command : \n");
+        printf("\nBackup RAM Command... \n");
 		BufferSAVE = (unsigned char*)malloc(save_size);
 		unsigned char first_packet=0;
 	    FILE *myfile;
@@ -531,8 +527,25 @@ else if (strcmp(argv[2], "-backup") == 0)
 	sp_close(port);
 	sp_free_port(port);
 
+}
 
+//******************* */
+//ERASE command
+//*********************/
 
+else if (strcmp(argv[2], "-erase") == 0) 
+{
+        printf("\nErase Backup RAM Command... \n");
+		sp_flush(rx_port,0);
+		Serial_Buffer_OUT[0]=0x49;
+		char data1[1];	data1[0]=0xAA;
+		sp_blocking_write(tx_port, data1, 1, 200);
+        sp_blocking_read(rx_port, Serial_Buffer_IN, 128, 200);
+		printf("\nBackup RAM Sucessfully Erased ...\n");
+		free(Serial_Buffer_IN);
+	    free(Serial_Buffer_OUT);	
+	    sp_close(port);
+	    sp_free_port(port);
 
 }
 
