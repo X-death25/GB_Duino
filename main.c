@@ -470,6 +470,9 @@ else if (strcmp(argv[2], "-backup") == 0)
 {
         printf("\nBackup RAM Command : \n");
 		BufferSAVE = (unsigned char*)malloc(save_size);
+		unsigned char first_packet=0;
+	    FILE *myfile;
+	
 
 		sp_flush(rx_port,0);
 	
