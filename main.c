@@ -628,7 +628,7 @@ else if (strcmp(argv[2], "-restore") == 0)
 
 				// Write Bank
 
-				printf(" Write Buffer \n");
+				//printf(" Write Buffer \n");
                 Serial_Buffer_OUT[0]=0x48;
 				sp_blocking_write(tx_port, Serial_Buffer_OUT, 128, 200);
 			//	printf("Bank Writted ! \n");
@@ -641,7 +641,9 @@ else if (strcmp(argv[2], "-restore") == 0)
                     sp_blocking_read(rx_port,Serial_Buffer_IN, 128, 200);
                 }
 
-				printf("Buffer Writted ! \n");
+				//printf("Buffer Writted ! \n");
+				 printf("\rBackup RAM write in progress: %ld%%",(100*l)/(save_size/1024)/1024);
+        fflush(stdout);
 
 				l=l+64;
 			}
