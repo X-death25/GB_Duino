@@ -50,9 +50,12 @@ int main(int argc, char *argv[])
 	unsigned char SGB=0;
 	unsigned char nramBank=0;
 	char dump_name[64];
+	unsigned char Arduino_Buffer[32*1024];
 	
 	unsigned long i=0;
 	unsigned long k=0;
+	unsigned char r=0;
+	unsigned long l=0;
 
 
      // Vérifier le nombre d'arguments
@@ -585,7 +588,65 @@ else if (strcmp(argv[2], "-restore") == 0)
         nramBank=(save_size/1024)/8;
         printf(" Number of RAM Bank : %d \n",nramBank);
 
+		// Buffer Bank
 
+        for (k = 0; k < 32*1024; k++)
+        {
+            Arduino_Buffer[k] = BufferSAVE[j+k];
+        }
+        j=j+8*1024;
+        k=0;
+
+        // Cleaning Buffer OUT & IN
+
+        for (k = 0; k < 128; k++)
+        {
+            Serial_Buffer_OUT[k]=0xFF;
+            Serial_Buffer_IN[k]=0xFF;
+        }
+        k=0;
+
+        r=1;
+        while ( r < nramBank+1)
+        {
+
+			printf(" Writting Bank %d/%d... \n",r,nramBank);
+
+            for (i = 0; i < 128; i++)
+            {
+
+				Serial_Buffer_OUT[0]=0x48; // Command number
+                Serial_Buffer_OUT[4]=r-1; // Bank number
+                Serial_Buffer_OUT[5]=i; // Frame number
+
+				for (k = 0; k < 64; k++)
+                {
+                    Serial_Buffer_OUT[64+k] = Arduino_Buffer[k+l];
+                }
+
+				k=0;
+
+				// Write Bank
+
+                Serial_Buffer_OUT[0]=0x48;
+				sp_blocking_write(tx_port, Serial_Buffer_OUT, 128, 200);
+
+				// Wait Transmission completed command
+
+				Serial_Buffer_IN[6] =0x00;
+				while ( Serial_Buffer_IN[6] != 0xDD )
+                {
+                    sp_blocking_read(rx_port,Serial_Buffer_IN, 128, 200);
+                }
+
+				l=l+64;
+			}
+            r=r+1;
+            i=0;
+        }
+
+
+        printf("\nSRAM Sucessfully Writted ...\n");
 
 		free(Serial_Buffer_IN);
 	    free(Serial_Buffer_OUT);	
