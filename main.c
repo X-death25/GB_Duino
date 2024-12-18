@@ -393,7 +393,7 @@ int main(int argc, char *argv[])
 		
  if ((strcmp(argv[2], "-read") == 0 )) 
 {
-    printf("DUMP ROM Command ! \n");
+    printf("\nDUMP ROM Command ! \n");
         
 	BufferROM = (unsigned char*)malloc(game_size);
 	for (k = 0; k < game_size; k++) BufferROM[k] = 0xFF;
@@ -539,9 +539,8 @@ else if (strcmp(argv[2], "-erase") == 0)
 {
         printf("\nErase Backup RAM Command... \n");
 		sp_flush(rx_port,0);
-		Serial_Buffer_OUT[0]=0x49;
-		char data1[1];	data1[0]=0xAA;
-		sp_blocking_write(tx_port, data1, 1, 200);
+        Serial_Buffer_OUT[0]=0x49;
+		sp_blocking_write(tx_port, Serial_Buffer_OUT, 128, 200);
         sp_blocking_read(rx_port, Serial_Buffer_IN, 128, 200);
 		printf("\nBackup RAM Sucessfully Erased ...\n");
 		free(Serial_Buffer_IN);
