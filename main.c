@@ -391,7 +391,7 @@ int main(int argc, char *argv[])
 //*********************/
 
 		
- if ((strcmp(argv[2], "-read") == 1 )) 
+ if ((strcmp(argv[2], "-read") == 0 )) 
 {
     printf("DUMP ROM Command ! \n");
         
