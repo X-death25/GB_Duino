@@ -48,6 +48,7 @@ int main(int argc, char *argv[])
 	unsigned long save_size=0;
 	unsigned char CGB=0;
 	unsigned char SGB=0;
+	unsigned char nramBank=0;
 	
 	unsigned long i=0;
 	unsigned long k=0;
@@ -549,6 +550,49 @@ else if (strcmp(argv[2], "-erase") == 0)
 	    sp_free_port(port);
 
 }
+
+
+//************************* */
+//Restore Backup RAM command
+//***************************/
+
+
+else if (strcmp(argv[2], "-restore") == 0) 
+{
+        printf("\nRestore Backup RAM Command... \n");
+		sp_flush(rx_port,0);
+        
+		// Open and buffer input save
+
+		BufferSAVE = (unsigned char*)malloc(save_size);
+	    FILE *myfile;
+
+        printf(" Save file: ");
+        scanf("%60s", dump_name);
+        myfile = fopen(dump_name,"rb");
+        fseek(myfile,0,SEEK_END);
+        save_size = ftell(myfile);
+        BufferSAVE = (unsigned char*)malloc(save_size);
+        rewind(myfile);
+        fread(BufferSAVE, 1, save_size, myfile);
+        fclose(myfile);
+
+		// Calculate number of ram bank
+
+        printf(" Save file size is %ld",save_size/1024);
+        printf(" Ko \n");
+        nramBank=(save_size/1024)/8;
+        printf(" Number of RAM Bank : %d \n",nramBank);
+
+
+
+		free(Serial_Buffer_IN);
+	    free(Serial_Buffer_OUT);	
+	    sp_close(port);
+	    sp_free_port(port);
+
+}
+
 
 
 	
