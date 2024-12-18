@@ -49,6 +49,7 @@ int main(int argc, char *argv[])
 	unsigned char CGB=0;
 	unsigned char SGB=0;
 	unsigned char nramBank=0;
+	char dump_name[64];
 	
 	unsigned long i=0;
 	unsigned long k=0;
