@@ -57,6 +57,10 @@ int main(int argc, char *argv[])
 	unsigned char r=0;
 	unsigned long l=0;
 
+	unsigned char manufacturer_id=0;
+    unsigned char device_id=0;
+    unsigned short flash_id=0;
+
 
      // Vérifier le nombre d'arguments
 
@@ -669,7 +673,35 @@ else if (strcmp(argv[2], "-restore") == 0)
 else if (strcmp(argv[2], "-identify") == 0) 
 {
         printf("\nDetect Flash Memory Command... \n");
-		
+		printf("Try to Detect AMD compatible Flash...\n");
+		sp_flush(rx_port,0);
+        Serial_Buffer_OUT[0]=0x4B;
+		sp_blocking_write(tx_port, Serial_Buffer_OUT, 128, 200);
+        sp_blocking_read(rx_port, Serial_Buffer_IN, 128, 200);
+
+		manufacturer_id = Serial_Buffer_IN[0];
+        device_id = Serial_Buffer_IN[1];
+        flash_id = (manufacturer_id<<8) | device_id;
+        switch(flash_id)
+        {
+        case 0x01AD :
+            printf("Memory : AM29F016 \n");
+            printf("Capacity : 16Mb \n");
+            break;
+        case 0x0141 :
+            printf("Memory : AM29F032 \n");
+            printf("Capacity : 32Mb \n");
+            break;
+        case 0x017E :
+            printf("Memory : S29GL064 \n");
+            printf("Capacity : 64Mb \n");
+            break;
+        default :
+            printf("No AMD or compatible Flash detected \n");
+            printf("Manufacturer ID : %02X  \n",manufacturer_id);
+            printf("Device ID : %02X  \n",device_id);
+            break;
+        }
 
 }
 
