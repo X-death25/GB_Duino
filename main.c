@@ -63,7 +63,7 @@ int main(int argc, char *argv[])
     if (argc != 4) {
         printf("Usage: %s <port> <mode> <type>\n", argv[0]);
         printf("  <port>: COM1, COM2, COM3, ...\n");
-        printf("  <mode>: -read, -write, -backup, -restore, -erase\n");
+        printf("  <mode>: -read, -write, -backup, -restore, -erase, -identify\n");
         return 1;
     }
 
@@ -76,9 +76,9 @@ int main(int argc, char *argv[])
   // Vérifier le deuxième argument (mode)
     if (strcmp(argv[2], "-read") != 0 && strcmp(argv[2], "-write") != 0 &&
         strcmp(argv[2], "-backup") != 0 && strcmp(argv[2], "-restore") != 0 &&
-		strcmp(argv[2], "-erase") != 0 )  
+		strcmp(argv[2], "-erase") != 0 && strcmp(argv[2], "-identify") != 0 )  
 	{
-        printf("Le deuxième argument doit être '-read', '-write', '-backup' ou '-restore'.\n");
+        printf("Le deuxième argument doit être '-read', '-write', '-identify' , '-backup' ou '-restore'.\n");
         return 1;
     }
 
@@ -661,6 +661,17 @@ else if (strcmp(argv[2], "-restore") == 0)
 
 }
 
+
+//************************* */
+//Detect Flash Memory
+//***************************/
+
+else if (strcmp(argv[2], "-identify") == 0) 
+{
+        printf("\nDetect Flash Memory Command... \n");
+		
+
+}
 
 
 	
