@@ -679,6 +679,19 @@ else if (strcmp(argv[2], "-identify") == 0)
 		sp_blocking_write(tx_port, Serial_Buffer_OUT, 128, 200);
         sp_blocking_read(rx_port, Serial_Buffer_IN, 128, 200);
 
+		printf("\nReading USB Buffer IN ...\n\n");
+	int j=0;
+	for (i = 0; i < 128; i++)
+		{
+		printf("%02X ",Serial_Buffer_IN[i]);
+		j++;
+		if (j==16)
+			{
+			printf("\n");
+			j=0;
+			}
+		}
+
 		manufacturer_id = Serial_Buffer_IN[0];
         device_id = Serial_Buffer_IN[1];
         flash_id = (manufacturer_id<<8) | device_id;
