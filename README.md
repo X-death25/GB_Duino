@@ -14,6 +14,7 @@ Supported Features
 | Dump MBC1 Cartridge                         | :white_check_mark: |
 | Dump MBC2 Cartridge                         | :white_check_mark: |
 | Dump MBC3 Cartridge                         | :white_check_mark: |
+| Dump MBC30 Cartridge                        | :white_check_mark: |
 | Dump MBC5 Cartridge                         | :white_check_mark: |
 | Rewrite Third Party Cartridge               | :arrows_counterclockwise: |
 
