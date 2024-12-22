@@ -14,6 +14,7 @@ Supported Features
 | Dump MBC1 Cartridge                         | :white_check_mark: |
 | Dump MBC2 Cartridge                         | :white_check_mark: |
 | Dump MBC3 Cartridge                         | :white_check_mark: |
+| Dump MBC30 Cartridge                        | :white_check_mark: |
 | Dump MBC5 Cartridge                         | :white_check_mark: |
 | Rewrite Third Party Cartridge               | :arrows_counterclockwise: |
 
@@ -25,6 +26,8 @@ You could find all documentation in the wiki here :
 
 
 <img src="https://github.com/X-death25/GB_Duino/blob/main/github_gfx/gb_duino%20dump01.png" data-canonical-src="https://github.com/X-death25/GB_Duino/blob/main/github_gfx/gb_duino%20dump01.png" width="49%" /> 
+
+<img src="https://github.com/X-death25/GB_Duino/blob/main/github_gfx/mbc30.PNG" data-canonical-src="https://github.com/X-death25/GB_Duino/blob/main/github_gfx/mbc30.PNG" width="49%" /> 
 
 ## Where i can buy it ?
 
