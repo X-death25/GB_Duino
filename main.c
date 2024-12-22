@@ -740,15 +740,12 @@ else if (strcmp(argv[2], "-identify") == 0)
 		manufacturer_id = Serial_Buffer_IN[0];
         device_id = Serial_Buffer_IN[1];
         flash_id = (manufacturer_id<<8) | device_id;
+		printf("\n");
         switch(flash_id)
         {
-        case 0x01AD :
+        case 0xC301 :
             printf("Memory : AM29F016 \n");
             printf("Capacity : 16Mb \n");
-            break;
-        case 0x0141 :
-            printf("Memory : AM29F032 \n");
-            printf("Capacity : 32Mb \n");
             break;
         case 0x017E :
             printf("Memory : S29GL064 \n");
