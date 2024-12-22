@@ -26,6 +26,8 @@ You could find all documentation in the wiki here :
 
 <img src="https://github.com/X-death25/GB_Duino/blob/main/github_gfx/gb_duino%20dump01.png" data-canonical-src="https://github.com/X-death25/GB_Duino/blob/main/github_gfx/gb_duino%20dump01.png" width="49%" /> 
 
+<img src="https://github.com/X-death25/GB_Duino/blob/main/github_gfx/mbc30.PNG" data-canonical-src="https://github.com/X-death25/GB_Duino/blob/main/github_gfx/mbc30.PNG" width="49%" /> 
+
 ## Where i can buy it ?
 
 Todo
