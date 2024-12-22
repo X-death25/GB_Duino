@@ -122,7 +122,8 @@ int main(int argc, char *argv[])
   // Vérifier le deuxième argument (mode)
     if (strcmp(argv[2], "-read") != 0 && strcmp(argv[2], "-write") != 0 &&
         strcmp(argv[2], "-backup") != 0 && strcmp(argv[2], "-restore") != 0 &&
-		strcmp(argv[2], "-erase") != 0 && strcmp(argv[2], "-identify") != 0 )  
+		strcmp(argv[2], "-erase") != 0 && strcmp(argv[2], "-identify") != 0 &&
+		strcmp(argv[2], "-wipe") != 0 )  
 	{
         printf("Le deuxième argument doit être '-read', '-write', '-identify' , '-backup' ou '-restore'.\n");
         return 1;
@@ -142,7 +143,11 @@ int main(int argc, char *argv[])
         printf("Mode       : Write Backup RAM\n");
     } else if (strcmp(argv[2], "-erase") == 0) {
         printf("Mode       : Erase Backup RAM\n");
-    }
+	} else if (strcmp(argv[2], "-identify") == 0) {
+        printf("Mode       : Flash Memory Identification\n");
+    } else if (strcmp(argv[2], "-wipe") == 0) {
+		printf("Mode       : Flash Memory Erase\n");
+	}
 
 /*
 	struct sp_port **port_list;
@@ -757,6 +762,21 @@ else if (strcmp(argv[2], "-identify") == 0)
             printf("Device ID : %02X  \n",device_id);
             break;
         }
+
+}
+
+//************************* */
+//Erase Flash Memory
+//***************************/
+
+else if (strcmp(argv[2], "-wipe") == 0) 
+{
+        printf("\nErase Flash Memory Command... \n");
+		psp_flush(rx_port,0);
+        Serial_Buffer_OUT[0]=0x4D;
+		sp_blocking_write(tx_port, Serial_Buffer_OUT, 128, 200);
+        sp_blocking_read(rx_port, Serial_Buffer_IN, 128, 90000);
+		printf("Flash Memory Erased Sucessfully !...\n");
 
 }
 
