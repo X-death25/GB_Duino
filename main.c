@@ -772,7 +772,7 @@ else if (strcmp(argv[2], "-identify") == 0)
 else if (strcmp(argv[2], "-wipe") == 0) 
 {
         printf("\nErase Flash Memory Command... \n");
-		psp_flush(rx_port,0);
+		sp_flush(rx_port,0);
         Serial_Buffer_OUT[0]=0x4D;
 		sp_blocking_write(tx_port, Serial_Buffer_OUT, 128, 200);
         sp_blocking_read(rx_port, Serial_Buffer_IN, 128, 90000);
