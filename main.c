@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 #define MAX_VERSION 	1
 #define MIN_VERSION 	0
@@ -33,33 +34,46 @@
 		}
 }*/
 
-
+#if defined(_WIN32)
 clock_t microsec_start;
 clock_t microsec_end;
+#else
+struct timeval ostime;
+long microsec_start = 0;
+long microsec_end = 0;
+#endif
 
 void timer_start()
 {
-
+#if defined(_WIN32)
+    microsec_start = clock();
+#else
     gettimeofday(&ostime, NULL);
     microsec_start = ((unsigned long long)ostime.tv_sec * 1000000) + ostime.tv_usec;
-
+#endif
 }
 
 void timer_end()
 {
-
+#if defined(_WIN32)
+    microsec_end = clock();
+#else
     gettimeofday(&ostime, NULL);
     microsec_end = ((unsigned long long)ostime.tv_sec * 1000000) + ostime.tv_usec;
-
+#endif
 }
 
 void timer_show()
 {
-
+#if defined(_WIN32)
+    printf("~GB: Elapsed time: %lds", (microsec_end - microsec_start)/1000);
+    printf(" (%ldms)\n", (microsec_end - microsec_start));
+#else
     printf("~GB: Elapsed time: %lds", (microsec_end - microsec_start)/1000000);
     printf(" (%ldms)\n", (microsec_end - microsec_start)/1000);
-
+#endif
 }
+
 
 int main(int argc, char *argv[])
 	{
