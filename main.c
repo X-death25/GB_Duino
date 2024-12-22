@@ -247,7 +247,7 @@ int main(int argc, char *argv[])
 
 	// Game Name
 	for (i = 0; i < 13; i++) Game_Name[i] = 0x20;
-	for (i = 0; i < 13; i++) Game_Name[i] = Serial_Buffer_IN[i+9];
+	for (i = 0; i < 12; i++) Game_Name[i] = Serial_Buffer_IN[i+9];
 	printf("\nGame Name : %s \n",Game_Name);
 
 	//Cartridge type
