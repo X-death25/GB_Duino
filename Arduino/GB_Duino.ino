@@ -1,8 +1,12 @@
 /*  GB_Duino
  *  GameBoy Shield for Arduino Mega 2560
- *  X-death 11/2024
+ *  X-death 12/2024
  */
 
+/*To Do :
+Fix Mysic Quest Backup RAM
+Fix DQ Monsters JAP
+*/
 /*To Do :
 Fix Mysic Quest Backup RAM
 Fix DQ Monsters JAP
@@ -840,7 +844,7 @@ void select_rom_bank(u16 bank) // TODO implement other MBCs
     if (mbc_num == MBC3 && !bank)
         return;  // bank 0 is at 0x0000-0x3FFF
 
-    //writeByte_GB(0x2000,bank&0x00FF);
+    writeByte_GB(0x2000,bank&0x00FF);
 
     if (mbc_num == MBC2 && bank < 0x1F) // aka bank 31
     {
@@ -869,14 +873,8 @@ void select_rom_bank(u16 bank) // TODO implement other MBCs
         writeByte_GB(0x4000,(bank >> 5) & 0x0003);*/
     }
 
-     else if (mbc_num == MBC5 && bank < 0x100) // aka bank 255
+    else if (mbc_num == MBC5 && bank > 0x00FF) // aka bank 255
     {
-        writeByte_GB(0x2100,bank);
-    }
-
-    else if (mbc_num == MBC5 && bank > 0x100) // aka bank 255
-    {
-        writeByte_GB(0x2100,bank);
         writeByte_GB(0x3000,1);
     }
 
@@ -1120,10 +1118,9 @@ void setup()
 
     // Init Serial
 
-    // start serial port at 115200 bps:
-   //Serial.begin(115200);
+    // start serial port at 38400 bps:
 
-    Serial.begin(19200);
+    Serial.begin(38400);
 
     // Cleanup Serial Input buffer
 
@@ -1160,7 +1157,10 @@ void setup()
      PORTH |= (1 << 0);
 
       // Output a low signal on RST(PH0) to initialize MMC correctly
-     // PORTH &= ~((1 << 0) | (1 << 1));
+      PORTH &= ~((1 << 0));
+
+          // RST(PH0) to H
+     PORTH |= (1 << 0);
 
        delay(400);
 
