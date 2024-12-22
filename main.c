@@ -48,9 +48,18 @@ int main(int argc, char *argv[])
 	unsigned long save_size=0;
 	unsigned char CGB=0;
 	unsigned char SGB=0;
+	unsigned char nramBank=0;
+	char dump_name[64];
+	unsigned char Arduino_Buffer[32*1024];
 	
 	unsigned long i=0;
 	unsigned long k=0;
+	unsigned char r=0;
+	unsigned long l=0;
+
+	unsigned char manufacturer_id=0;
+    unsigned char device_id=0;
+    unsigned short flash_id=0;
 
 
      // Vérifier le nombre d'arguments
@@ -58,7 +67,7 @@ int main(int argc, char *argv[])
     if (argc != 4) {
         printf("Usage: %s <port> <mode> <type>\n", argv[0]);
         printf("  <port>: COM1, COM2, COM3, ...\n");
-        printf("  <mode>: -read, -write, -backup, -restore, -erase\n");
+        printf("  <mode>: -read, -write, -backup, -restore, -erase, -identify\n");
         return 1;
     }
 
@@ -71,9 +80,9 @@ int main(int argc, char *argv[])
   // Vérifier le deuxième argument (mode)
     if (strcmp(argv[2], "-read") != 0 && strcmp(argv[2], "-write") != 0 &&
         strcmp(argv[2], "-backup") != 0 && strcmp(argv[2], "-restore") != 0 &&
-		strcmp(argv[2], "-erase") != 0 )  
+		strcmp(argv[2], "-erase") != 0 && strcmp(argv[2], "-identify") != 0 )  
 	{
-        printf("Le deuxième argument doit être '-read', '-write', '-backup' ou '-restore'.\n");
+        printf("Le deuxième argument doit être '-read', '-write', '-identify' , '-backup' ou '-restore'.\n");
         return 1;
     }
 
@@ -391,9 +400,9 @@ int main(int argc, char *argv[])
 //*********************/
 
 		
- if ((strcmp(argv[2], "-read") == 1 )) 
+ if ((strcmp(argv[2], "-read") == 0 )) 
 {
-    printf("DUMP ROM Command ! \n");
+    printf("\nDUMP ROM Command ! \n");
         
 	BufferROM = (unsigned char*)malloc(game_size);
 	for (k = 0; k < game_size; k++) BufferROM[k] = 0xFF;
@@ -539,15 +548,173 @@ else if (strcmp(argv[2], "-erase") == 0)
 {
         printf("\nErase Backup RAM Command... \n");
 		sp_flush(rx_port,0);
-		Serial_Buffer_OUT[0]=0x49;
-		char data1[1];	data1[0]=0xAA;
-		sp_blocking_write(tx_port, data1, 1, 200);
+        Serial_Buffer_OUT[0]=0x49;
+		sp_blocking_write(tx_port, Serial_Buffer_OUT, 128, 200);
         sp_blocking_read(rx_port, Serial_Buffer_IN, 128, 200);
 		printf("\nBackup RAM Sucessfully Erased ...\n");
 		free(Serial_Buffer_IN);
 	    free(Serial_Buffer_OUT);	
 	    sp_close(port);
 	    sp_free_port(port);
+
+}
+
+
+//************************* */
+//Restore Backup RAM command
+//***************************/
+
+
+else if (strcmp(argv[2], "-restore") == 0) 
+{
+        printf("\nRestore Backup RAM Command... \n");
+		sp_flush(rx_port,0);
+        
+		// Open and buffer input save
+
+		BufferSAVE = (unsigned char*)malloc(save_size);
+	    FILE *myfile;
+
+        printf(" Save file: ");
+        scanf("%60s", dump_name);
+        myfile = fopen(dump_name,"rb");
+        fseek(myfile,0,SEEK_END);
+        save_size = ftell(myfile);
+        BufferSAVE = (unsigned char*)malloc(save_size);
+        rewind(myfile);
+        fread(BufferSAVE, 1, save_size, myfile);
+        fclose(myfile);
+
+		// Calculate number of ram bank
+
+        printf(" Save file size is %ld",save_size/1024);
+        printf(" Ko \n");
+        nramBank=(save_size/1024)/8;
+        printf(" Number of RAM Bank : %d \n",nramBank);
+
+		// Buffer Bank
+
+        for (k = 0; k < 32*1024; k++)
+        {
+            Arduino_Buffer[k] = BufferSAVE[j+k];
+        }
+        j=j+8*1024;
+        k=0;
+
+        // Cleaning Buffer OUT & IN
+
+        for (k = 0; k < 128; k++)
+        {
+            Serial_Buffer_OUT[k]=0xFF;
+            Serial_Buffer_IN[k]=0xFF;
+        }
+        k=0;
+        i=0;
+        r=1;
+        while ( r < nramBank+1)
+        {
+
+			printf(" Writting Bank %d/%d... \n",r,nramBank);
+
+            for (i = 0; i < 128; i++)
+            {
+
+				Serial_Buffer_OUT[0]=0x48; // Command number
+                Serial_Buffer_OUT[4]=r-1; // Bank number
+                Serial_Buffer_OUT[5]=i; // Frame number
+
+				for (k = 0; k < 64; k++)
+                {
+                    Serial_Buffer_OUT[64+k] = Arduino_Buffer[k+l];
+                }
+
+				k=0;
+
+				// Write Bank
+
+				//printf(" Write Buffer \n");
+                Serial_Buffer_OUT[0]=0x48;
+				sp_blocking_write(tx_port, Serial_Buffer_OUT, 128, 200);
+			//	printf("Bank Writted ! \n");
+
+				// Wait Transmission completed command
+
+				Serial_Buffer_IN[6] =0x00;
+				while ( Serial_Buffer_IN[6] != 0xDD )
+                {
+                    sp_blocking_read(rx_port,Serial_Buffer_IN, 128, 200);
+                }
+
+				//printf("Buffer Writted ! \n");
+				 printf("\rBackup RAM write in progress: %ld%%",(100*l)/(save_size/1024)/1024);
+        fflush(stdout);
+
+				l=l+64;
+			}
+            r=r+1;
+            i=0;
+        }
+
+
+        printf("\nSRAM Sucessfully Writted ...\n");
+
+		free(Serial_Buffer_IN);
+	    free(Serial_Buffer_OUT);	
+	    sp_close(port);
+	    sp_free_port(port);
+
+}
+
+
+//************************* */
+//Detect Flash Memory
+//***************************/
+
+else if (strcmp(argv[2], "-identify") == 0) 
+{
+        printf("\nDetect Flash Memory Command... \n");
+		printf("Try to Detect AMD compatible Flash...\n");
+		sp_flush(rx_port,0);
+        Serial_Buffer_OUT[0]=0x4B;
+		sp_blocking_write(tx_port, Serial_Buffer_OUT, 128, 200);
+        sp_blocking_read(rx_port, Serial_Buffer_IN, 128, 200);
+
+		printf("\nReading USB Buffer IN ...\n\n");
+	int j=0;
+	for (i = 0; i < 128; i++)
+		{
+		printf("%02X ",Serial_Buffer_IN[i]);
+		j++;
+		if (j==16)
+			{
+			printf("\n");
+			j=0;
+			}
+		}
+
+		manufacturer_id = Serial_Buffer_IN[0];
+        device_id = Serial_Buffer_IN[1];
+        flash_id = (manufacturer_id<<8) | device_id;
+        switch(flash_id)
+        {
+        case 0x01AD :
+            printf("Memory : AM29F016 \n");
+            printf("Capacity : 16Mb \n");
+            break;
+        case 0x0141 :
+            printf("Memory : AM29F032 \n");
+            printf("Capacity : 32Mb \n");
+            break;
+        case 0x017E :
+            printf("Memory : S29GL064 \n");
+            printf("Capacity : 64Mb \n");
+            break;
+        default :
+            printf("No AMD or compatible Flash detected \n");
+            printf("Manufacturer ID : %02X  \n",manufacturer_id);
+            printf("Device ID : %02X  \n",device_id);
+            break;
+        }
 
 }
 
