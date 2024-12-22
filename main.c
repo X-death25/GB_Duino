@@ -35,7 +35,7 @@
 
 int main(int argc, char *argv[])
 	{
-	unsigned char Game_Name[15];
+	unsigned char Game_Name[13];
 	unsigned short Global_Checksum=0;
 
 	unsigned char *BufferROM;
@@ -121,8 +121,8 @@ int main(int argc, char *argv[])
 	printf("Opening port.\n");
 	sp_open(port, SP_MODE_READ_WRITE);	
 		
-	printf("Setting port to 19200 8N1, no flow control.\n");
-	sp_set_baudrate(port, 19200);
+	printf("Setting port to 38400 8N1, no flow control.\n");
+	sp_set_baudrate(port, 38400);
 	sp_set_bits(port, 8);
 	sp_set_parity(port, SP_PARITY_NONE);
 	sp_set_stopbits(port, 1);
@@ -195,7 +195,7 @@ int main(int argc, char *argv[])
 	Global_Checksum = (Serial_Buffer_IN[35]<<8) | Serial_Buffer_IN[36];
 
 	// Game Name
-	for (i = 0; i < 11; i++) Game_Name[i] = Serial_Buffer_IN[i+9];
+	for (i = 0; i < 13; i++) Game_Name[i] = Serial_Buffer_IN[i+9];
 	printf("\nGame Name : %s \n",Game_Name);
 
 	//Cartridge type
