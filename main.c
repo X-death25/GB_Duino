@@ -748,9 +748,13 @@ else if (strcmp(argv[2], "-identify") == 0)
 		printf("\n");
         switch(flash_id)
         {
-        case 0xC301 :
+        case 0x01AD :
             printf("Memory : AM29F016 \n");
             printf("Capacity : 16Mb \n");
+            break;
+		case 0x0141 :
+            printf("Memory : AM29F032 \n");
+            printf("Capacity : 32Mb \n");
             break;
         case 0x017E :
             printf("Memory : S29GL064 \n");

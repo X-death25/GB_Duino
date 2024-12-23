@@ -1015,9 +1015,14 @@ void writeFlash8(int address, int byte)
 
 void reset_command()
 {
-    SetDataOutput();
-    writeByte_GB(0xAAA,0xF0);
+     SetDataOutput();
+    writeFlash8(0x5555,0xAA);
+    writeFlash8(0x2AAA,0x55);
+    writeFlash8(0x5555,0xF0);
     delay(32);
+    /*SetDataOutput();
+    writeByte_GB(0xAAA,0xF0);
+    delay(32);*/
 }
 
 void EraseFlash()
@@ -1038,7 +1043,7 @@ void EraseFlash()
 void infosId()
 {
 
-    SetDataOutput();
+    /*SetDataOutput();
     writeByte_GB(0xAAA,0xF0);
     delay(100);
     writeByte_GB(0xAAA,0xF0);
@@ -1061,12 +1066,9 @@ void infosId()
     DDRC = 0x00;
     Device_ID = readByte_GB(2);
 
-    delay(16);
+    delay(16);*/
 
 
-  
-
-/*
   /////// INFO ID for x8 only device //////////
 
     // Reset flash
@@ -1105,7 +1107,7 @@ void infosId()
 
     Device_ID = readByte_GB(1);
     SetCs(1);
-   */
+   
 
 }
 
