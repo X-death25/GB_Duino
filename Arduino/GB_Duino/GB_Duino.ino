@@ -1069,6 +1069,31 @@ void infosId()
     delay(16);*/
 
 
+    SetDataOutput();
+    writeFlash8(0x5555,0xF0);
+    delay(100);
+    writeFlash8(0x5555,0xF0);
+    delay(16);
+    SetDataOutput();
+    writeFlash8(0x5555,0xAA);
+    writeFlash8(0x2AAA,0x55);
+    writeFlash8(0x5555,0x90);
+        // Switch data pins to input
+    DDRC = 0x00;
+    Manufacturer_ID = readByte_GB(0);
+        // Switch data pins to output
+    DDRC = 0xFF;
+    writeFlash8(0x5555,0xF0);
+    delay(16);
+    writeFlash8(0x5555,0xAA);
+    writeFlash8(0x2AAA,0x55);
+    writeFlash8(0x5555,0x90);
+            // Switch data pins to input
+    DDRC = 0x00;
+    Device_ID = readByte_GB(2);
+
+    delay(16);
+/*
   /////// INFO ID for x8 only device //////////
 
     // Reset flash
@@ -1108,7 +1133,7 @@ void infosId()
     Device_ID = readByte_GB(1);
     SetCs(1);
    
-
+*/
 }
 
 

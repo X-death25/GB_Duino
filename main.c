@@ -88,12 +88,17 @@ int main(int argc, char *argv[])
 	unsigned long game_size=0;
 	unsigned char Ram_Size=0;
 	unsigned long save_size=0;
+
+	FILE *myfile;
+	char rom_name[64];
+    unsigned long rom_size=0;
+    unsigned char nromBank=0;
 	unsigned char CGB=0;
 	unsigned char SGB=0;
 	unsigned char nramBank=0;
 	char dump_name[64];
+
 	unsigned char Arduino_Buffer[32*1024];
-	
 	unsigned long i=0;
 	unsigned long k=0;
 	unsigned char r=0;
@@ -784,6 +789,90 @@ else if (strcmp(argv[2], "-wipe") == 0)
 
 }
 
+
+//************************* */
+//Write Flash Memory
+//***************************/
+
+
+else if (strcmp(argv[2], "-write") == 0) 
+{
+        printf("\nWrite Flash Memory Command... \n");
+		sp_flush(rx_port,0);
+   
+		// Open and buffer input ROM File
+
+        printf(" ROM file: ");
+        scanf("%60s", rom_name);
+        myfile = fopen(rom_name,"rb");
+        fseek(myfile,0,SEEK_END);
+        rom_size = ftell(myfile);
+        BufferROM = (unsigned char*)malloc(rom_size);
+        rewind(myfile);
+        fread(BufferROM, 1, rom_size, myfile);
+        fclose(myfile);
+
+        // Calculate number of rom bank
+
+        printf(" ROM file size is %ld",rom_size/1024);
+        printf(" Ko \n");
+        nromBank=(rom_size/1024)/16;
+       // nromBank=128;
+        printf(" Number of ROM Bank : %d \n",nromBank);
+
+        printf("Write Flash Memory...\n");
+        j=0;
+
+		 // Cleaning Buffer OUT & IN
+
+        for (k = 0; k < 128; k++)
+        {
+            Serial_Buffer_OUT[k]=0xFF;
+            Serial_Buffer_IN[k]=0xFF;
+        }
+        k=0;
+
+        // nromBank=1;
+        r=1;
+        while ( r < nromBank+1)
+        {
+			printf(" Writting Bank %d/%d... \n",r,nromBank);
+			for (i = 0; i < 256; i++)
+            {
+                // Prepare Bank
+
+                Serial_Buffer_OUT[0]=0x4E; // Command number
+				  for (k = 0; k < 64; k++)
+                {
+                    Serial_Buffer_OUT[64+k] = BufferROM[k+l];
+                }
+
+                k=0;
+                // Write Bank
+
+                Serial_Buffer_OUT[0]=0x4E;
+				sp_blocking_write(tx_port, Serial_Buffer_OUT, 128, 200);
+				// Wait Transmission completed command
+
+				Serial_Buffer_IN[6] =0x00;
+				while ( Serial_Buffer_IN[6] != 0xDD )
+                {
+                    sp_blocking_read(rx_port,Serial_Buffer_IN, 128, 200);
+                }
+				l=l+64;
+
+            }
+            r=r+1;
+            i=0;
+        }
+        printf("\nFlash Memory Sucessfully Writted ...\n");
+
+		free(Serial_Buffer_IN);
+	    free(Serial_Buffer_OUT);	
+	    sp_close(port);
+	    sp_free_port(port);
+
+}
 
 	
 	// Free the array created by sp_list_ports(). 
