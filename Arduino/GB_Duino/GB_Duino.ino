@@ -1474,7 +1474,7 @@ void loop()
 
     }
 
-     if ( Arduino_Buffer[0] == 0x4E && Serial_received == 1) // Write GB Flash
+      if ( Arduino_Buffer[0] == 0x4E && Serial_received == 1) // Write GB Flash
 
     {
 
@@ -1492,72 +1492,136 @@ void loop()
 
                     PORTH &= ~(1 << 5); // Wr '0'
         SetDataOutput();
-        writeByte_GB(0xAAA,0xF0);
-        delay(100);
+        writeByte_GB(0x5555,0xAA);
+        writeByte_GB(0x2AAA,0x55);
+        writeByte_GB(0x5555,0xF0);
+        delay(32);
         mbc_num = MBC5;
-        select_rom_bank(0);
-        writeByte_GB(0x4000, 0x0);
+        select_rom_bank(2);
+        writeFlash8(0x4000, 0x0);
         delay(32);
         }
 
           // Prepare Write Mode
+
+      //  SetRd(1);
+     //   SetCs(1);
+      //  SetAddress(0x8000); // Set A15 to "1"
+
         k=0;
 
         // Prepare Buffer
 
       //  select_rom_bank(0);
        // select_rom_bank(Arduino_Buffer[4]); // assign bank
-        //l=Arduino_Buffer[5]*64;
+        l=Arduino_Buffer[5]*64;
+       // Arduino_Buffer[4]=0;
+   
+      /*  writeByte_GB(0x2100, Arduino_Buffer[4]);         // Set ROM bank
+        writeByte_GB(0x3000, Arduino_Buffer[4] >> 5);    // Set bits 5 & 6 (01100000) of ROM bank
+        writeByte_GB(0x2000, Arduino_Buffer[4] & 0x1F);  // Set bits 0 & 4 (00011111) of ROM bank*/
 
-
-       if ( Addr_Counter == 16384)
+        if ( Addr_Counter == 16384)
         {
             mbc_num = MBC5;
             Cur_Bank=Cur_Bank+1;
-            writeByte_GB(0x2100,Cur_Bank);
-            writeByte_GB(0x3000, 0x0);
-            Addr_Counter=0;
+            //select_rom_bank(Cur_Bank);
+            writeFlash8(0x20, Cur_Bank); 
+           // select_rom_bank(Cur_Bank);
+            writeFlash8(0x3000, 0x0);
+            Addr_Counter = 0; 
+            //reset_command();
+            // PORTH |= (1 << 4); // Audio '1'
+              //PORTH &= ~(1 << 4); // Audio '0'
         }
+
+     
+ 
+
+  /*  if ( Arduino_Buffer[4] < 2)
+     {
+
+       writeByte_GB(0x2100, 0);         // Set ROM bank
+        writeByte_GB(0x3000, 0);    // Set bits 5 & 6 (01100000) of ROM bank
+        writeByte_GB(0x2000, 0);  // Set bits 0 & 4 (00011111) of ROM bank
+    }*/
         
         SetCs(0);
+      //  delay(5);
+        
+        
+   
+        // Write Buffer
+
+        if ( Cur_Bank == 0)
+
+        {
 
                   for (k = 0; k < 64; k++)
         {
-                writeByte_GB(0xAAA,0xAA);
-    writeByte_GB(0x555,0x55);
-    writeByte_GB(0xAAA,0xA0);
-            if ( Cur_Bank == 0){writeByte_GB(Addr_Counter +k, Arduino_Buffer[k+64]);}
-            else {writeByte_GB(0x4000+Addr_Counter +k, Arduino_Buffer[k+64]);}     
+            writeByte_GB(0x5555,0xAA);
+            writeByte_GB(0x2AAA,0x55); 
+            writeByte_GB(0x5555,0xA0);
+            writeByte_GB(0+k+Addr_Counter,Arduino_Buffer[k+64]);
+            writeByte_GB(0+k+Addr_Counter,Arduino_Buffer[k+64]);
 
-               //  delay(3);   
-
-        DX_AS_INPUT;
-
-           // delay(3);   
-
-        // Set OE/RD(PH6) LOW
-            PORTH &= ~(1 << 3);
-
-            delay(2);
-
-             /*while (((PINC & 0x80) != (Arduino_Buffer[k+64] & 0x80)) || retry < 30) 
-             {
-                 __asm__("nop\n\t");
-                retry++;
-            }*/
-
-             // Switch OE/RD(PH6) to HIGH
-            PORTH |= (1 << 3);
+            PORTH &= ~(1 << 6);
+            __asm__("nop\n\t""nop\n\t""nop\n\t""nop\n\t");
+            __asm__("nop\n\t""nop\n\t""nop\n\t""nop\n\t");
+            PORTH |= (1 << 6);
             
            // writeByte_GB(0x4000+l+k,Arduino_Buffer[k+64]);
         }
-        retry=0;
 
-   
+          
+        }
+
+        else
+        {
+          PORTH |= (1 << 4); // Audio '1'
+
+        for (k = 0; k < 64; k++)
+        {
+            writeByte_GB(0x5555,0xAA);
+            writeByte_GB(0x2AAA,0x55); 
+            writeByte_GB(0x5555,0xA0);
+            writeByte_GB(0x4000+k+Addr_Counter,Arduino_Buffer[k+64]);
+            writeByte_GB(0x4000+k+Addr_Counter,Arduino_Buffer[k+64]);
+
+            PORTH &= ~(1 << 6);
+            __asm__("nop\n\t""nop\n\t""nop\n\t""nop\n\t");
+            __asm__("nop\n\t""nop\n\t""nop\n\t""nop\n\t");
+            PORTH |= (1 << 6);
+            
+           // writeByte_GB(0x4000+l+k,Arduino_Buffer[k+64]);
+        }
+        }
+  
               Addr_Counter=Addr_Counter+64;
-              k=0;
+             // if (Addr_Counter == 256*64){Addr_Counter=0;}
+     
+ 
+ /*else
+ {
+ for (k = 0; k < 64; k++)
+        {
+            writeByte_GB(0x5555,0xAA);
+            writeByte_GB(0x2AAA,0x55); 
+            writeByte_GB(0x5555,0xA0);
+            writeByte_GB(0x4000+k+l,Arduino_Buffer[k+64]);
+            writeByte_GB(0x4000+k+l,Arduino_Buffer[k+64]);  
+             }
 
+      
+    }*/
        
+    
+
+               k=0;
+        delay(5);
+      
+        
+
         
         // Send Transfert Completed command
 
@@ -1567,34 +1631,41 @@ void loop()
             Serial.write(0xDD);
         }
 
+
+      //  SetCs(1);
+
+
            Serial_received = 0;
            rx_byte =0;
+
     }
-    
 
 
     if ( Arduino_Buffer[0] == 0x4D && Serial_received == 1) // Erase GB Flash
 
     {
 
-        PORTH &= ~(1 << 5); // Wr '0'
+         PORTH &= ~(1 << 5); // Wr '0'
         SetDataOutput();
-        writeByte_GB(0xAAA,0xF0);
-        delay(100);
+        writeFlash8(0x5555,0xAA);
+        writeFlash8(0x2AAA,0x55);
+        writeFlash8(0x5555,0xF0);
+        delay(32);
 
-    writeByte_GB(0xAAA,0xAA);
-    writeByte_GB(0x555,0x55);
-    writeByte_GB(0xAAA,0x80);
-        writeByte_GB(0xAAA,0xAA);
-    writeByte_GB(0x555,0x55);
-    writeByte_GB(0xAAA,0x10);
-
+        writeFlash8(0x5555,0xAA);
+        writeFlash8(0x2AAA,0x55);
+        writeFlash8(0x5555,0x80);
+        writeFlash8(0x5555,0xAA);
+        writeFlash8(0x2AAA,0x55);
+        writeFlash8(0x5555,0x10);
         i=0;
         delay(1700*6);
 
         SetDataOutput();
-writeByte_GB(0xAAA,0xF0);
-        delay(100);
+        writeFlash8(0x5555,0xAA);
+        writeFlash8(0x2AAA,0x55);
+        writeFlash8(0x5555,0xF0);
+        delay(32);
 
 
         i=0;
