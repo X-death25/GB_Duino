@@ -864,7 +864,7 @@ else if (strcmp(argv[2], "-write") == 0)
 				Serial_Buffer_IN[6] =0x00;
 				while ( Serial_Buffer_IN[6] != 0xDD )
                 {
-                    sp_blocking_read(rx_port,Serial_Buffer_IN, 16, 200);
+                    sp_blocking_read(rx_port,Serial_Buffer_IN, 128, 200);
                 }
 
 				 printf("\rROM write in progress: %ld%%",(100*l)/(rom_size/1024)/1024);
