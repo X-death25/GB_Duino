@@ -821,6 +821,7 @@ else if (strcmp(argv[2], "-write") == 0)
         printf(" Number of ROM Bank : %d \n",nromBank);
 
         printf("Write Flash Memory...\n");
+		timer_start();
         j=0;
 
 		 // Cleaning Buffer OUT & IN
@@ -833,24 +834,30 @@ else if (strcmp(argv[2], "-write") == 0)
         k=0;
 
         // nromBank=1;
+        k=0;
+        i=0;
         r=1;
+
         while ( r < nromBank+1)
         {
 			printf(" Writting Bank %d/%d... \n",r,nromBank);
 			for (i = 0; i < 256; i++)
             {
-                // Prepare Bank
 
                 Serial_Buffer_OUT[0]=0x4E; // Command number
-				  for (k = 0; k < 64; k++)
+                Serial_Buffer_OUT[4]=r-1; // Bank number
+                Serial_Buffer_OUT[5]=i; // Frame number
+
+				// Buffer Bank in an half serial paquet
+
+				for (k = 0; k < 64; k++)
                 {
                     Serial_Buffer_OUT[64+k] = BufferROM[k+l];
                 }
 
-                k=0;
-                // Write Bank
-
-                Serial_Buffer_OUT[0]=0x4E;
+				// Write Bank
+				k=0;
+				Serial_Buffer_OUT[0]=0x4E;
 				sp_blocking_write(tx_port, Serial_Buffer_OUT, 128, 200);
 				// Wait Transmission completed command
 
@@ -859,6 +866,10 @@ else if (strcmp(argv[2], "-write") == 0)
                 {
                     sp_blocking_read(rx_port,Serial_Buffer_IN, 128, 200);
                 }
+
+				 printf("\rROM write in progress: %ld%%",(100*l)/(rom_size/1024)/1024);
+                 fflush(stdout);
+
 				l=l+64;
 
             }
@@ -866,6 +877,8 @@ else if (strcmp(argv[2], "-write") == 0)
             i=0;
         }
         printf("\nFlash Memory Sucessfully Writted ...\n");
+		timer_end();
+        timer_show();
 
 		free(Serial_Buffer_IN);
 	    free(Serial_Buffer_OUT);	
