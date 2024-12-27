@@ -510,6 +510,39 @@ void writeByte_GB_SRAM(int myAddress, byte myData)
     PORTC = 0xFF;
 }
 
+void busyCheck_GB(unsigned long address, byte data) 
+{
+  byte statusReg = readByte_GB(address);
+  //byte count = 0;
+  while ((statusReg & 0x80) != (data & 0x80)) {
+    // Update Status
+    statusReg = readByte_GB(address);
+    /* Debug
+    count++;
+    if (count > 250) {
+      println_Msg("");
+      print_Msg(F("Bank: "));
+      print_Msg(currBank);
+      print_Msg(F(" Addr: "));
+      println_Msg(currAddr + currByte);
+      display_Update();
+      wait();
+    }
+    */
+  }
+}
+
+/******************************************
+  29F016/29F032/29F033/39SF040 flashrom functions
+*****************************************/
+void sendFlashCommand_GB(byte cmd) 
+{
+    writeByte_GB(0x555, 0xaa);
+    writeByte_GB(0x2aa, 0x55);
+    writeByte_GB(0x555, cmd);
+  
+}
+
 /******************************************
   CFI Flash function
 *****************************************/
@@ -576,6 +609,7 @@ void identifyCFI_GB()
   delay(100);
 
 }
+
 
 
 /******************************************
@@ -844,7 +878,7 @@ void select_rom_bank(u16 bank) // TODO implement other MBCs
     if (mbc_num == MBC3 && !bank)
         return;  // bank 0 is at 0x0000-0x3FFF
 
-    writeByte_GB(0x2000,bank&0x00FF);
+    writeByte_GB(0x2100,bank&0x00FF);
 
     if (mbc_num == MBC2 && bank < 0x1F) // aka bank 31
     {
@@ -1488,155 +1522,147 @@ void loop()
             PORTH &= ~(1 << 5); // Wr '0'
             delay(32);
             PORTH |= (1 << 5); // Wr '1'
+
+            writeByte_GB(0x2100,0);
+            writeByte_GB(0x3100,0);
+
             Init_Mapper =1;
 
-                    PORTH &= ~(1 << 5); // Wr '0'
-        SetDataOutput();
-        writeByte_GB(0x5555,0xAA);
-        writeByte_GB(0x2AAA,0x55);
-        writeByte_GB(0x5555,0xF0);
-        delay(32);
-        mbc_num = MBC5;
-        select_rom_bank(2);
-        writeFlash8(0x4000, 0x0);
-        delay(32);
+
         }
 
-          // Prepare Write Mode
+        // Prepare Write Mode
 
-      //  SetRd(1);
-     //   SetCs(1);
-      //  SetAddress(0x8000); // Set A15 to "1"
+        SetRd(1);
+        SetCs(1);
 
         k=0;
 
         // Prepare Buffer
 
-      //  select_rom_bank(0);
-       // select_rom_bank(Arduino_Buffer[4]); // assign bank
-        l=Arduino_Buffer[5]*64;
-       // Arduino_Buffer[4]=0;
-   
-      /*  writeByte_GB(0x2100, Arduino_Buffer[4]);         // Set ROM bank
-        writeByte_GB(0x3000, Arduino_Buffer[4] >> 5);    // Set bits 5 & 6 (01100000) of ROM bank
-        writeByte_GB(0x2000, Arduino_Buffer[4] & 0x1F);  // Set bits 0 & 4 (00011111) of ROM bank*/
+        select_rom_bank(Arduino_Buffer[4]); // assign bank
+        SetCs(0);
+        delay(1);
+        l=Arduino_Buffer[5];
+        l=l*64;
+        // Write Buffer
+        if ( l>= 16384){l=0;}
 
-        if ( Addr_Counter == 16384)
-        {
-            mbc_num = MBC5;
-            Cur_Bank=Cur_Bank+1;
-            //select_rom_bank(Cur_Bank);
-            writeFlash8(0x20, Cur_Bank); 
-           // select_rom_bank(Cur_Bank);
-            writeFlash8(0x3000, 0x0);
-            Addr_Counter = 0; 
-            //reset_command();
-            // PORTH |= (1 << 4); // Audio '1'
-              //PORTH &= ~(1 << 4); // Audio '0'
-        }
+      if ( Arduino_Buffer[4] == 0) // Bank0
 
-     
- 
-
-  /*  if ( Arduino_Buffer[4] < 2)
      {
 
-       writeByte_GB(0x2100, 0);         // Set ROM bank
-        writeByte_GB(0x3000, 0);    // Set bits 5 & 6 (01100000) of ROM bank
-        writeByte_GB(0x2000, 0);  // Set bits 0 & 4 (00011111) of ROM bank
-    }*/
-        
-        SetCs(0);
-      //  delay(5);
-        
-        
-   
-        // Write Buffer
+         // Init Bank
+      
 
-        if ( Cur_Bank == 0)
-
-        {
-
-                  for (k = 0; k < 64; k++)
+              for (k = 0; k < 64; k++)
         {
             writeByte_GB(0x5555,0xAA);
             writeByte_GB(0x2AAA,0x55); 
             writeByte_GB(0x5555,0xA0);
-            writeByte_GB(0+k+Addr_Counter,Arduino_Buffer[k+64]);
-            writeByte_GB(0+k+Addr_Counter,Arduino_Buffer[k+64]);
+            writeByte_GB(0+k+l,Arduino_Buffer[k+64]);
+            writeByte_GB(0+k+l,Arduino_Buffer[k+64]);
 
             PORTH &= ~(1 << 6);
             __asm__("nop\n\t""nop\n\t""nop\n\t""nop\n\t");
             __asm__("nop\n\t""nop\n\t""nop\n\t""nop\n\t");
             PORTH |= (1 << 6);
             
-           // writeByte_GB(0x4000+l+k,Arduino_Buffer[k+64]);
         }
 
-          
-        }
+        k=0;
+        delay(1);
 
-        else
-        {
-          PORTH |= (1 << 4); // Audio '1'
+
+     }
+
+    else
+     {
+
+           // Init Bank
+                PORTH |= (1 << 5); // Wr '1'
+                SetRd(1);
+                SetCs(0);
+              // Reset flash
+              sendFlashCommand_GB(0xf0);
+              delay(100);
+              // Reset flash
+              sendFlashCommand_GB(0xf0);
+              delay(100);
+
+              SetRd(1);
+              __asm__("nop\n\tnop\n\tnop\n\t");  // Waste a few CPU cycles to remove write errors
+
+              // Select Bank
+
+              writeByte_GB(0x2100,Arduino_Buffer[4] & 0x00FF);
+              writeByte_GB(0x3000,0);
+
+              SetRd(0);
+              __asm__("nop\n\tnop\n\tnop\n\t");  // Waste a few CPU cycles to remove write errors
+
+              readByte_GB(0x4000+0);
+              readByte_GB(0x4000+0);
+              readByte_GB(0x4000+1);
+              readByte_GB(0x4000+1);
+              readByte_GB(0x4000+2);
+              readByte_GB(0x4000+2);
+              SetRd(1);
+              __asm__("nop\n\tnop\n\tnop\n\t");  // Waste a few CPU cycles to remove write errors
+
+
+           // select_rom_bank(Cur_Bank);
+
 
         for (k = 0; k < 64; k++)
         {
-            writeByte_GB(0x5555,0xAA);
-            writeByte_GB(0x2AAA,0x55); 
-            writeByte_GB(0x5555,0xA0);
-            writeByte_GB(0x4000+k+Addr_Counter,Arduino_Buffer[k+64]);
-            writeByte_GB(0x4000+k+Addr_Counter,Arduino_Buffer[k+64]);
-
-            PORTH &= ~(1 << 6);
-            __asm__("nop\n\t""nop\n\t""nop\n\t""nop\n\t");
-            __asm__("nop\n\t""nop\n\t""nop\n\t""nop\n\t");
-            PORTH |= (1 << 6);
-            
-           // writeByte_GB(0x4000+l+k,Arduino_Buffer[k+64]);
-        }
-        }
-  
-              Addr_Counter=Addr_Counter+64;
-             // if (Addr_Counter == 256*64){Addr_Counter=0;}
-     
- 
- /*else
- {
- for (k = 0; k < 64; k++)
-        {
-            writeByte_GB(0x5555,0xAA);
-            writeByte_GB(0x2AAA,0x55); 
-            writeByte_GB(0x5555,0xA0);
+             writeByte_GB(0x555, 0xaa);
+             writeByte_GB(0x2aa, 0x55);
+             writeByte_GB(0x555, 0xA0);
             writeByte_GB(0x4000+k+l,Arduino_Buffer[k+64]);
-            writeByte_GB(0x4000+k+l,Arduino_Buffer[k+64]);  
-             }
+            writeByte_GB(0x4000+k+l,Arduino_Buffer[k+64]);
 
-      
-    }*/
-       
-    
 
-               k=0;
-        delay(5);
-      
+
+          // Setting CS(PH3) and OE/RD(PH6) LOW
+          
+            // Set OE/RD(PH6) LOW
+            PORTH &= ~(1 << 6);
+
+            // Busy check
+            __asm__("nop\n\tnop\n\tnop\n\t");  // Waste a few CPU cycles to remove write errors
+
+            // Switch CS(PH3) and OE/RD(PH6) to HIGH
+               // Switch OE/RD(PH6) to HIGH
+            PORTH |= (1 << 6);
+          __asm__("nop\n\tnop\n\tnop\n\t");  // Waste a few CPU cycles to remove write errors
+        }
+
+        k=0;
+        delay(1);
+     }
+
         
 
-        
+
         // Send Transfert Completed command
 
-        for (unsigned char i = 0; i < 64; i++)
+        // Serial.write(0xDD);
+
+
+        for (unsigned char i = 0; i < 16; i++)
         {
             // Send Escape command
             Serial.write(0xDD);
         }
 
 
-      //  SetCs(1);
 
+        //set_ram_state(DISABLE);
+        SetCs(1);
 
-           Serial_received = 0;
-           rx_byte =0;
+        Serial_received = 0;
+        rx_byte =0;
 
     }
 
@@ -1659,7 +1685,10 @@ void loop()
         writeFlash8(0x2AAA,0x55);
         writeFlash8(0x5555,0x10);
         i=0;
-        delay(1700*6);
+        //delay(1700*6);
+
+           // Wait until erase is complete
+      busyCheck_GB(0, 0x80);
 
         SetDataOutput();
         writeFlash8(0x5555,0xAA);
@@ -1684,11 +1713,24 @@ void loop()
 
     {
 
-        PORTH &= ~(1 << 5); // Wr '0'
-        reset_command();
-        infosId();
-        Arduino_Buffer[0] = Manufacturer_ID;
-        Arduino_Buffer[1] = Device_ID;
+      //  PORTH &= ~(1 << 5); // Wr '0'
+      //  reset_command();
+       // infosId();
+
+
+       // Reset flash
+    sendFlashCommand_GB(0xf0);
+    delay(100);
+
+    // ID command sequence
+    sendFlashCommand_GB(0x90);
+
+    // Read the two id bytes into a string
+    Arduino_Buffer[0] = readByte_GB(0);
+    Arduino_Buffer[1] = readByte_GB(1);
+
+       // Arduino_Buffer[0] = Manufacturer_ID;
+      //  Arduino_Buffer[1] = Device_ID;
         Arduino_Buffer[6] = 0xAA;
 
         for (unsigned char i = 0; i < 128; i++)
