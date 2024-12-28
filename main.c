@@ -859,10 +859,10 @@ else if (strcmp(argv[2], "-write") == 0)
 
 		else
 
-		{
+	  {
 
         while ( r < nromBank+1)  
-        {
+         {
 			printf(" Writting Bank %d/%d... \n",r,nromBank);
 			for (i = 0; i < 256; i++)  // 256
             {
@@ -897,7 +897,8 @@ else if (strcmp(argv[2], "-write") == 0)
 			}      
             r=r+1;
             i=0;
-        }
+         }
+	  }
         printf("\nFlash Memory Sucessfully Writted ...\n");
 		timer_end();
         timer_show();
