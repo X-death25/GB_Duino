@@ -99,6 +99,7 @@ int main(int argc, char *argv[])
 	char dump_name[64];
 
 	unsigned char Arduino_Buffer[32*1024];
+	unsigned char Write_Buffer[4096];
 	unsigned long i=0;
 	unsigned long k=0;
 	unsigned char r=0;
@@ -838,27 +839,33 @@ else if (strcmp(argv[2], "-write") == 0)
         i=0;
         r=1;
 
-        while ( r < nromBank+1)
+        while ( r < nromBank+1)  
         {
 			printf(" Writting Bank %d/%d... \n",r,nromBank);
-			for (i = 0; i < 256; i++)
-            {
+			//for (i = 0; i < 256; i++)  // 256
+           // {
 
                 Serial_Buffer_OUT[0]=0x4E; // Command number
                 Serial_Buffer_OUT[4]=r-1; // Bank number
-                Serial_Buffer_OUT[5]=i; // Frame number
+                Serial_Buffer_OUT[5]=0; // Frame number
 
-				// Buffer Bank in an half serial paquet
+				// Buffer Bank in write Buffer
 
-				for (k = 0; k < 64; k++)
+				for (k = 0; k < 4096; k++) // 64
                 {
-                    Serial_Buffer_OUT[64+k] = BufferROM[k+l];
+                    Write_Buffer[k] = BufferROM[k+l];
                 }
 
-				// Write Bank
+				// Send Write command to Arduino
+
 				k=0;
 				Serial_Buffer_OUT[0]=0x4E;
 				sp_blocking_write(tx_port, Serial_Buffer_OUT, 128, 200);
+
+				// Send Buffer Write To Arduino
+
+				sp_blocking_write(tx_port,Write_Buffer,4096, 200*32);
+
 				// Wait Transmission completed command
 
 				Serial_Buffer_IN[6] =0x00;
@@ -870,7 +877,7 @@ else if (strcmp(argv[2], "-write") == 0)
 				 printf("\rROM write in progress: %ld%%",(100*l)/(rom_size/1024)/1024);
                  fflush(stdout);
 
-				l=l+64;
+				l=l+4096;
 
             }
             r=r+1;
