@@ -882,7 +882,7 @@ else if (strcmp(argv[2], "-write") == 0)
             }
             r=r+1;
             i=0;
-        }
+      //  }
         printf("\nFlash Memory Sucessfully Writted ...\n");
 		timer_end();
         timer_show();
