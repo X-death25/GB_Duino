@@ -99,7 +99,6 @@ int main(int argc, char *argv[])
 	char dump_name[64];
 
 	unsigned char Arduino_Buffer[32*1024];
-	unsigned char Write_Buffer[4096];
 	unsigned long i=0;
 	unsigned long k=0;
 	unsigned char r=0;
@@ -834,38 +833,55 @@ else if (strcmp(argv[2], "-write") == 0)
         }
         k=0;
 
-        // nromBank=1;
+        nromBank=1;
         k=0;
         i=0;
         r=1;
+		unsigned char FirstPaquet=0;
+
+		if ( FirstPaquet == 0)
+
+		{
+			  Serial_Buffer_OUT[0]=0x5A; // Command number for lock write mode
+			  Serial_Buffer_OUT[4]=nromBank;
+
+			  sp_blocking_write(tx_port, Serial_Buffer_OUT, 128, 200);
+				// Wait Transmission completed command
+
+				Serial_Buffer_IN[6] =0x00;
+				while ( Serial_Buffer_IN[6] != 0xDD )
+                {
+                    sp_blocking_read(rx_port,Serial_Buffer_IN, 128, 200);
+                }
+
+				FirstPaquet = 1;
+		}
+
+		else
+
+		{
 
         while ( r < nromBank+1)  
         {
 			printf(" Writting Bank %d/%d... \n",r,nromBank);
-			//for (i = 0; i < 256; i++)  // 256
-           // {
+			for (i = 0; i < 256; i++)  // 256
+            {
 
-                Serial_Buffer_OUT[0]=0x4E; // Command number
+               /* Serial_Buffer_OUT[0]=0x4E; // Command number
                 Serial_Buffer_OUT[4]=r-1; // Bank number
-                Serial_Buffer_OUT[5]=0; // Frame number
+                Serial_Buffer_OUT[5]=i; // Frame number*/
 
-				// Buffer Bank in write Buffer
+				// Buffer Bank in serial paquet
 
-				for (k = 0; k < 4096; k++) // 64
+				for (k = 0; k < 128; k++) // 64
                 {
-                    Write_Buffer[k] = BufferROM[k+l];
+                    Serial_Buffer_OUT[k] = BufferROM[k+l];
                 }
 
-				// Send Write command to Arduino
-
+				// Write Bank
 				k=0;
 				Serial_Buffer_OUT[0]=0x4E;
 				sp_blocking_write(tx_port, Serial_Buffer_OUT, 128, 200);
-
-				// Send Buffer Write To Arduino
-
-				sp_blocking_write(tx_port,Write_Buffer,4096, 200*32);
-
 				// Wait Transmission completed command
 
 				Serial_Buffer_IN[6] =0x00;
@@ -877,12 +893,11 @@ else if (strcmp(argv[2], "-write") == 0)
 				 printf("\rROM write in progress: %ld%%",(100*l)/(rom_size/1024)/1024);
                  fflush(stdout);
 
-				l=l+4096;
-
-            }
+				l=l+128;
+			}      
             r=r+1;
             i=0;
-      //  }
+        }
         printf("\nFlash Memory Sucessfully Writted ...\n");
 		timer_end();
         timer_show();
