@@ -839,6 +839,9 @@ else if (strcmp(argv[2], "-write") == 0)
         r=1;
 		unsigned char FirstPaquet=0;
 
+	while ( r < nromBank+1)  
+    {
+
 		if ( FirstPaquet == 0)
 
 		{
@@ -861,8 +864,6 @@ else if (strcmp(argv[2], "-write") == 0)
 
 	  {
 
-        while ( r < nromBank+1)  
-         {
 			printf(" Writting Bank %d/%d... \n",r,nromBank);
 			for (i = 0; i < 256; i++)  // 256
             {
