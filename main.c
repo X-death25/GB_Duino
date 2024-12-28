@@ -833,7 +833,7 @@ else if (strcmp(argv[2], "-write") == 0)
         }
         k=0;
 
-        nromBank=1;
+     //   nromBank=1;
         k=0;
         i=0;
         r=1;
@@ -880,7 +880,7 @@ else if (strcmp(argv[2], "-write") == 0)
 
 				// Write Bank
 				k=0;
-				Serial_Buffer_OUT[0]=0x4E;
+				//Serial_Buffer_OUT[0]=0x4E;
 				sp_blocking_write(tx_port, Serial_Buffer_OUT, 128, 200);
 				// Wait Transmission completed command
 
