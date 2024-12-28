@@ -865,7 +865,7 @@ else if (strcmp(argv[2], "-write") == 0)
 	  {
 
 			printf(" Writting Bank %d/%d... \n",r,nromBank);
-			for (i = 0; i < 256; i++)  // 256
+			for (i = 0; i < 128; i++)  
             {
 
                /* Serial_Buffer_OUT[0]=0x4E; // Command number
