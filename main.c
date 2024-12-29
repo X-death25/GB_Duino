@@ -842,11 +842,9 @@ else if (strcmp(argv[2], "-write") == 0)
 	while ( r < nromBank+1)  
     {
 
-		if ( FirstPaquet == 0)
 
-		{
 			  Serial_Buffer_OUT[0]=0x5A; // Command number for lock write mode
-			  Serial_Buffer_OUT[4]=nromBank;
+			  Serial_Buffer_OUT[4]=r-1;
 
 			  sp_blocking_write(tx_port, Serial_Buffer_OUT, 128, 200);
 				// Wait Transmission completed command
@@ -858,11 +856,6 @@ else if (strcmp(argv[2], "-write") == 0)
                 }
 
 				FirstPaquet = 1;
-		}
-
-		else
-
-	  {
 
 			printf(" Writting Bank %d/%d... \n",r,nromBank);
 			for (i = 0; i < 128; i++)  
@@ -897,8 +890,7 @@ else if (strcmp(argv[2], "-write") == 0)
 				l=l+128;
 			}      
             r=r+1;
-            i=0;
-         }
+            i=0;      
 	  }
         printf("\nFlash Memory Sucessfully Writted ...\n");
 		timer_end();
