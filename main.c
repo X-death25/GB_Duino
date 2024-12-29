@@ -870,7 +870,7 @@ else if (strcmp(argv[2], "-write") == 0)
 
 				// Write Bank
 				k=0;
-				Serial_Buffer_OUT[0]=0x4E;
+				//Serial_Buffer_OUT[0]=0x4E;
 				sp_blocking_write(tx_port, Serial_Buffer_OUT, 128, 200);
 				// Wait Transmission completed command
 
@@ -883,7 +883,7 @@ else if (strcmp(argv[2], "-write") == 0)
 				 printf("\rROM write in progress: %ld%%",(100*l)/(rom_size/1024)/1024);
                  fflush(stdout);
 
-				l=l+64;
+				l=l+128;
 
             }
             r=r+1;
