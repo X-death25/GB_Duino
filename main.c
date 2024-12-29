@@ -850,9 +850,9 @@ else if (strcmp(argv[2], "-write") == 0)
 
 				// Buffer Bank in an half serial paquet
 
-				for (k = 0; k < 112; k++) // 64
+				for (k = 0; k < 64; k++) // 64
                 {
-                    Serial_Buffer_OUT[112+k] = BufferROM[k+l];
+                    Serial_Buffer_OUT[64+k] = BufferROM[k+l];
                 }
 
 				// Write Bank
