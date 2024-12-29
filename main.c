@@ -833,48 +833,31 @@ else if (strcmp(argv[2], "-write") == 0)
         }
         k=0;
 
-     //   nromBank=1;
+        // nromBank=1;
         k=0;
         i=0;
         r=1;
-		unsigned char FirstPaquet=0;
 
-	while ( r < nromBank+1)  
-    {
-
-
-			  Serial_Buffer_OUT[0]=0x5A; // Command number for lock write mode
-			  Serial_Buffer_OUT[4]=r-1;
-
-			  sp_blocking_write(tx_port, Serial_Buffer_OUT, 128, 200);
-				// Wait Transmission completed command
-
-				Serial_Buffer_IN[6] =0x00;
-				while ( Serial_Buffer_IN[6] != 0xDD )
-                {
-                    sp_blocking_read(rx_port,Serial_Buffer_IN, 128, 200);
-                }
-
-				FirstPaquet = 1;
-
+        while ( r < nromBank+1)  
+        {
 			printf(" Writting Bank %d/%d... \n",r,nromBank);
-			for (i = 0; i < 128; i++)  
+			for (i = 0; i < 256; i++)  // 256
             {
 
-               /* Serial_Buffer_OUT[0]=0x4E; // Command number
+                Serial_Buffer_OUT[0]=0x4E; // Command number
                 Serial_Buffer_OUT[4]=r-1; // Bank number
-                Serial_Buffer_OUT[5]=i; // Frame number*/
+                Serial_Buffer_OUT[5]=i; // Frame number
 
-				// Buffer Bank in serial paquet
+				// Buffer Bank in an half serial paquet
 
-				for (k = 0; k < 128; k++) // 64
+				for (k = 0; k < 112; k++) // 64
                 {
-                    Serial_Buffer_OUT[k] = BufferROM[k+l];
+                    Serial_Buffer_OUT[112+k] = BufferROM[k+l];
                 }
 
 				// Write Bank
 				k=0;
-				//Serial_Buffer_OUT[0]=0x4E;
+				Serial_Buffer_OUT[0]=0x4E;
 				sp_blocking_write(tx_port, Serial_Buffer_OUT, 128, 200);
 				// Wait Transmission completed command
 
@@ -887,11 +870,12 @@ else if (strcmp(argv[2], "-write") == 0)
 				 printf("\rROM write in progress: %ld%%",(100*l)/(rom_size/1024)/1024);
                  fflush(stdout);
 
-				l=l+128;
-			}      
+				l=l+64;
+
+            }
             r=r+1;
-            i=0;      
-	  }
+            i=0;
+        }
         printf("\nFlash Memory Sucessfully Writted ...\n");
 		timer_end();
         timer_show();
