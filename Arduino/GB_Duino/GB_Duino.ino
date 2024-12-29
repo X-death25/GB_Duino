@@ -130,6 +130,9 @@ unsigned char fix=0;
 unsigned char Cur_Bank=0;
 unsigned long retry=0;
 
+unsigned char Write_Lock = 0;
+unsigned long Bytes_Writted=0;
+
 
 #define MAX_VERSION   1
 #define MIN_VERSION   0
@@ -1179,9 +1182,9 @@ void setup()
 
     // Init Serial
 
-    // start serial port at 38400 bps:
+    // start serial port at 57600 bps:
 
-    Serial.begin(38400);
+    Serial.begin(57600);
 
     // Cleanup Serial Input buffer
 
@@ -1329,7 +1332,7 @@ void loop()
         //if (rlen == 128) {Serial_received = 1;rlen=0; }
     }
 
-    if ( Arduino_Buffer[0] == 0x7E && Serial_received == 1) // Send Header
+    if ( Arduino_Buffer[0] == 0x7E && Serial_received == 1 && Write_Lock == 0) // Send Header
 
     {
         rd_header();
@@ -1341,7 +1344,7 @@ void loop()
         Serial_received = 0;
     }
 
-    if ( Arduino_Buffer[0] == 0x45 && Serial_received == 1) // Dump ROM
+    if ( Arduino_Buffer[0] == 0x45 && Serial_received == 1 && Write_Lock == 0) // Dump ROM
 
     {
         for (u16 bank = 0; bank < num_rom_banks; bank++)
@@ -1365,7 +1368,7 @@ void loop()
         rx_byte =0;
     }
 
-    if ( Arduino_Buffer[0] == 0x47 && Serial_received == 1) // Dump RAM
+    if ( Arduino_Buffer[0] == 0x47 && Serial_received == 1 && Write_Lock == 0) // Dump RAM
 
     {
         set_ram_state(ENABLE);
@@ -1400,7 +1403,7 @@ void loop()
 
 
 
-    if ( Arduino_Buffer[0] == 0x48 && Serial_received == 1) // WRITE RAM
+    if ( Arduino_Buffer[0] == 0x48 && Serial_received == 1 && Write_Lock == 0) // WRITE RAM
 
     {
 
@@ -1480,7 +1483,7 @@ void loop()
 
     }
 
-    if ( Arduino_Buffer[0] == 0x49 && Serial_received == 1) // ERASE RAM
+    if ( Arduino_Buffer[0] == 0x49 && Serial_received == 1 && Write_Lock == 0) // ERASE RAM
 
     {
         set_ram_state(ENABLE);
@@ -1508,7 +1511,7 @@ void loop()
 
     }
 
-      if ( Arduino_Buffer[0] == 0x4E && Serial_received == 1) // Write GB Flash
+      if (  Write_Lock == 1 && Serial_received == 1) // Write GB Flash
 
     {
 
@@ -1528,10 +1531,11 @@ void loop()
 
             Init_Mapper =1;
 
-
         }
 
         // Prepare Write Mode
+
+        if (Bytes_Writted == 16384){Bytes_Writted=0;Cur_Bank++;}
 
         SetRd(1);
         SetCs(1);
@@ -1540,34 +1544,36 @@ void loop()
 
         // Prepare Buffer
 
-        select_rom_bank(Arduino_Buffer[4]); // assign bank
+        select_rom_bank(Cur_Bank); // assign bank
         SetCs(0);
         delay(1);
-        l=Arduino_Buffer[5];
-        l=l*64;
+        //l=Arduino_Buffer[5];
+        //l=l*64;
         // Write Buffer
-        if ( l>= 16384){l=0;}
+       // if ( l>= 16384){l=0;}
 
-      if ( Arduino_Buffer[4] == 0) // Bank0
+      if ( Cur_Bank == 0) // Bank0
 
      {
 
          // Init Bank
       
 
-              for (k = 0; k < 64; k++)
+              for (k = 0; k < 128; k++)
         {
+          if ( Arduino_Buffer[k] != 0xFF) // Skip Write 0xFF bytes
+          {  
             writeByte_GB(0x5555,0xAA);
             writeByte_GB(0x2AAA,0x55); 
             writeByte_GB(0x5555,0xA0);
-            writeByte_GB(0+k+l,Arduino_Buffer[k+64]);
-            writeByte_GB(0+k+l,Arduino_Buffer[k+64]);
+            writeByte_GB(0+k+Bytes_Writted,Arduino_Buffer[k]);
+            writeByte_GB(0+k+Bytes_Writted,Arduino_Buffer[k]);
 
             PORTH &= ~(1 << 6);
             __asm__("nop\n\t""nop\n\t""nop\n\t""nop\n\t");
             __asm__("nop\n\t""nop\n\t""nop\n\t""nop\n\t");
             PORTH |= (1 << 6);
-            
+          }  
         }
 
         k=0;
@@ -1580,22 +1586,26 @@ void loop()
      {
 
            // Init Bank
+
                 PORTH |= (1 << 5); // Wr '1'
                 SetRd(1);
                 SetCs(0);
-              // Reset flash
-              sendFlashCommand_GB(0xf0);
-              delay(100);
-              // Reset flash
-              sendFlashCommand_GB(0xf0);
-              delay(100);
 
-              SetRd(1);
+              // Reset flash
+              sendFlashCommand_GB(0xf0);
+              //delay(50);
+              __asm__("nop\n\tnop\n\tnop\n\t");  // Waste a few CPU cycles to remove write errors
+              // Reset flash
+              sendFlashCommand_GB(0xf0);
+              __asm__("nop\n\tnop\n\tnop\n\t");  // Waste a few CPU cycles to remove write errors
+             // delay(50);
+
+               SetRd(1);
               __asm__("nop\n\tnop\n\tnop\n\t");  // Waste a few CPU cycles to remove write errors
 
               // Select Bank
 
-              writeByte_GB(0x2100,Arduino_Buffer[4] & 0x00FF);
+              writeByte_GB(0x2100,Cur_Bank & 0x00FF);
               writeByte_GB(0x3000,0);
 
               SetRd(0);
@@ -1607,22 +1617,22 @@ void loop()
               readByte_GB(0x4000+1);
               readByte_GB(0x4000+2);
               readByte_GB(0x4000+2);
-              SetRd(1);
+               SetRd(1);
               __asm__("nop\n\tnop\n\tnop\n\t");  // Waste a few CPU cycles to remove write errors
 
 
            // select_rom_bank(Cur_Bank);
 
 
-        for (k = 0; k < 64; k++)
+        for (k = 0; k < 128; k++)
         {
+          if ( Arduino_Buffer[k] != 0xFF) // Skip Write 0xFF bytes
+          {  
              writeByte_GB(0x555, 0xaa);
              writeByte_GB(0x2aa, 0x55);
              writeByte_GB(0x555, 0xA0);
-            writeByte_GB(0x4000+k+l,Arduino_Buffer[k+64]);
-            writeByte_GB(0x4000+k+l,Arduino_Buffer[k+64]);
-
-
+            writeByte_GB(0x4000+k+Bytes_Writted,Arduino_Buffer[k]);
+            writeByte_GB(0x4000+k+Bytes_Writted,Arduino_Buffer[k]);
 
           // Setting CS(PH3) and OE/RD(PH6) LOW
           
@@ -1636,18 +1646,16 @@ void loop()
                // Switch OE/RD(PH6) to HIGH
             PORTH |= (1 << 6);
           __asm__("nop\n\tnop\n\tnop\n\t");  // Waste a few CPU cycles to remove write errors
+          }
         }
 
         k=0;
         delay(1);
      }
 
-        
-
-
         // Send Transfert Completed command
 
-        // Serial.write(0xDD);
+        Bytes_Writted=Bytes_Writted+128;
 
 
         for (unsigned char i = 0; i < 16; i++)
@@ -1659,7 +1667,27 @@ void loop()
 
 
         //set_ram_state(DISABLE);
-        SetCs(1);
+        PORTH |=  (1 << 6); // CS '1'
+
+        Serial_received = 0;
+        rx_byte =0;
+
+    }
+
+    if ( Arduino_Buffer[0] == 0x5A && Serial_received == 1 && Write_Lock == 0 ) // Lock Write Flash Mode
+
+    {
+
+
+        // Prepare Buffer
+        mbc_num = MBC5;
+        Write_Lock=1;
+
+        for (unsigned char i = 0; i < 16; i++)
+        {
+            // Send Escape command
+            Serial.write(0xDD);
+        }
 
         Serial_received = 0;
         rx_byte =0;
@@ -1667,7 +1695,8 @@ void loop()
     }
 
 
-    if ( Arduino_Buffer[0] == 0x4D && Serial_received == 1) // Erase GB Flash
+
+    if ( Arduino_Buffer[0] == 0x4D && Serial_received == 1 && Write_Lock == 0) // Erase GB Flash
 
     {
 
@@ -1709,7 +1738,7 @@ void loop()
 
     }
 
-    if ( Arduino_Buffer[0] == 0x4B && Serial_received == 1) // Detect GB Flash
+    if ( Arduino_Buffer[0] == 0x4B && Serial_received == 1 && Write_Lock == 0) // Detect GB Flash
 
     {
 
@@ -1747,7 +1776,7 @@ void loop()
     }
 
     
-    if ( Arduino_Buffer[0] == 0x4F && Serial_received == 1) // Extras
+    if ( Arduino_Buffer[0] == 0x4F && Serial_received == 1 && Write_Lock == 0) // Extras
 
     {
 
