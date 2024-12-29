@@ -838,21 +838,34 @@ else if (strcmp(argv[2], "-write") == 0)
         i=0;
         r=1;
 
+		// Lock Write command
+
+		      Serial_Buffer_OUT[0]=0x5A; // Command number for lock write mode
+
+			  sp_blocking_write(tx_port, Serial_Buffer_OUT, 128, 200);
+				// Wait Transmission completed command
+
+				Serial_Buffer_IN[6] =0x00;
+				while ( Serial_Buffer_IN[6] != 0xDD )
+                {
+                    sp_blocking_read(rx_port,Serial_Buffer_IN, 128, 200);
+                }
+
         while ( r < nromBank+1)  
         {
 			printf(" Writting Bank %d/%d... \n",r,nromBank);
-			for (i = 0; i < 256; i++)  // 256
+			for (i = 0; i < 128; i++)  
             {
 
                 Serial_Buffer_OUT[0]=0x4E; // Command number
                 Serial_Buffer_OUT[4]=r-1; // Bank number
                 Serial_Buffer_OUT[5]=i; // Frame number
 
-				// Buffer Bank in an half serial paquet
+				// Buffer Bank in a serial paquet
 
-				for (k = 0; k < 64; k++) // 64
+				for (k = 0; k < 128; k++) // 64
                 {
-                    Serial_Buffer_OUT[64+k] = BufferROM[k+l];
+                    Serial_Buffer_OUT[k] = BufferROM[k+l];
                 }
 
 				// Write Bank
