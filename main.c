@@ -843,12 +843,12 @@ else if (strcmp(argv[2], "-write") == 0)
 		      Serial_Buffer_OUT[0]=0x5A; // Command number for lock write mode
 
 			  sp_blocking_write(tx_port, Serial_Buffer_OUT, 128, 200);
-				// Wait Transmission completed command
 
-				Serial_Buffer_IN[6] =0x00;
-				while ( Serial_Buffer_IN[6] != 0xDD )
+				// Wait Transmission completed command
+			    char data1[1];	data1[0]=0x00;
+				while ( data1[0] != 0xDD )
                 {
-                    sp_blocking_read(rx_port,Serial_Buffer_IN, 128, 200);
+                    sp_blocking_read(rx_port,data1,1, 200);
                 }
 
         while ( r < nromBank+1)  
@@ -873,11 +873,10 @@ else if (strcmp(argv[2], "-write") == 0)
 				//Serial_Buffer_OUT[0]=0x4E;
 				sp_blocking_write(tx_port, Serial_Buffer_OUT, 128, 200);
 				// Wait Transmission completed command
-
-				Serial_Buffer_IN[6] =0x00;
-				while ( Serial_Buffer_IN[6] != 0xDD )
+			    char data1[1];	data1[0]=0x00;
+				while ( data1[0] != 0xDD )
                 {
-                    sp_blocking_read(rx_port,Serial_Buffer_IN, 128, 200);
+                    sp_blocking_read(rx_port,data1,1, 200);
                 }
 
 				 printf("\rROM write in progress: %ld%%",(100*l)/(rom_size/1024)/1024);
