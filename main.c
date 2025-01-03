@@ -845,11 +845,7 @@ else if (strcmp(argv[2], "-write") == 0)
 			  sp_blocking_write(tx_port, Serial_Buffer_OUT, 128, 200);
 
 				// Wait Transmission completed command
-			    char data1[1];	data1[0]=0x00;
-				while ( data1[0] != 0xDD )
-                {
-                    sp_blocking_read(rx_port,data1,1, 200);
-                }
+			    sp_blocking_read(rx_port, Serial_Buffer_IN, 1, 200);
 
         while ( r < nromBank+1)  
         {
@@ -873,11 +869,7 @@ else if (strcmp(argv[2], "-write") == 0)
 				//Serial_Buffer_OUT[0]=0x4E;
 				sp_blocking_write(tx_port, Serial_Buffer_OUT, 128, 200);
 				// Wait Transmission completed command
-			    char data1[1];	data1[0]=0x00;
-				while ( data1[0] != 0xDD )
-                {
-                    sp_blocking_read(rx_port,data1,1, 200);
-                }
+			    sp_blocking_read(rx_port, Serial_Buffer_IN, 1, 200);
 
 				 printf("\rROM write in progress: %ld%%",(100*l)/(rom_size/1024)/1024);
                  fflush(stdout);
