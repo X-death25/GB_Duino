@@ -39,7 +39,7 @@ Todo
 
 ## Special thanks
 
-- Jackobo (Akina Usagi) for the beautiful GUI.
+- Jackobo (Takeshi Imbert) for the beautiful GUI.
 - Sanni Cart Reader ( a lot of low level function is based on Sanni old Arduino version ) https://github.com/sanni/cartreader
 - 
 
