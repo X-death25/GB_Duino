@@ -24,6 +24,7 @@ You could find all documentation in the wiki here :
 
 ## Preview
 
+<img src="https://github.com/X-death25/GB_Duino/blob/main/github_gfx/pcb_01.PNG" data-canonical-src="https://github.com/X-death25/GB_Duino/blob/main/github_gfx/pcb_01.PNG" width="49%" /> 
 
 <img src="https://github.com/X-death25/GB_Duino/blob/main/github_gfx/gb_duino%20dump01.png" data-canonical-src="https://github.com/X-death25/GB_Duino/blob/main/github_gfx/gb_duino%20dump01.png" width="49%" /> 
 
